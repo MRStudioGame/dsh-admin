@@ -9,7 +9,7 @@ const router = useRouter()
 const route = useRoute()
 const auth = useAuthStore()
 
-const form = reactive({ username: 'admin', password: 'admin123' })
+const form = reactive({ username: 'admin', password: '201301' })
 const loading = ref(false)
 
 async function onLogin() {
@@ -61,7 +61,7 @@ async function onLogin() {
         </el-button>
       </el-form>
       <div class="login-hint">
-        演示账号：admin / operator / viewer（密码均为 admin123）
+        演示账号：admin / operator / viewer（密码均为 201301）
       </div>
     </div>
   </div>

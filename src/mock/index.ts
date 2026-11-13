@@ -49,7 +49,7 @@ function genDeviceId(): string {
 }
 
 // ─────────── 种子数据 ───────────
-const ADMIN_PASSWORD = 'admin123' // 仅 Mock 用；真实后端走哈希 + Secrets
+const ADMIN_PASSWORD = '201301' // 仅 Mock 用；真实后端走哈希 + Secrets
 
 const admins: AdminUser[] = [
   { id: 'a1', username: 'admin', nickname: '超级管理员', role: 'super', roleName: '超级管理员', lastLoginAt: randTime(), status: 'active' },
