@@ -2,25 +2,26 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "2.7.1",
-  "build": 2701,
+  "version": "2.7.2",
+  "build": 2702,
   "minSdk": 26,
   "date": "2026-11-15",
-  "notes": "修复「检查更新点击无反应」：全链路超时兜底、清单三端点并发择优、下载字节数校验与备用直链自动切换，任何分支必有可见反馈。",
+  "notes": "每次进入 App 自动检测更新，有新版本立即弹出更新提示；移除 12 小时稍后提醒抑制，新增后台回前台生命周期检测。",
   "changelog": [
-    "修复点击「检查更新」完全无反应：PackageInfo 原生通道加 3s 超时与缓存，检查流程加 35s/40s 双层硬超时，状态机必然复位",
-    "消除静默失败：context 失效回退根 Navigator、结论/失败弹窗异常降级自研 Toast、更新弹窗锁滞留 60s 强制复位并给出明确提示",
-    "版本清单冗余：主源 + jsDelivr + GitHub raw 三端点并发拉取，取版本号/构建号最高的响应，规避主源抖动与 CDN 旧缓存",
-    "下载链路加固：通道传输结束核对实际字节数；MD5 校验失败自动清理坏包并切换下一备用直链，不再反复卡在同一失败通道",
-    "保留自研弹窗/Toast、不跳转官网、不打开浏览器、全链路结构化调试日志、MD5 校验与安装权限引导等全部既有规范"
+    "每次进入 App 自动检测更新：冷启动检测 + 从后台/锁屏回到前台检测，命中新版本立即弹出自研更新提示",
+    "移除「稍后提醒」12 小时抑制：关闭本次提示后，下次进入 App 仍会正常提醒，不再静默跳过",
+    "顶层 State 接入生命周期监听，仅后台→前台才触发，避免冷启动重复检查；自动检查带执行锁、1.5s 合并与 35s 总时限",
+    "自动检查异常/超时/端点全失败均写完整调试轨迹并复位状态机；同一时刻只允许一个更新弹窗，锁滞留 60s 可自愈",
+    "保留三端点并发择优、PackageInfo 超时兜底、手动检查必有可见反馈、下载字节数校验与备用直链自动切换等全部既有加固",
+    "保留自研弹窗/Toast、不跳转官网、不打开浏览器、MD5 校验、安装引导与 App 内更新模块常驻内置"
   ],
-  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.7.1/DeepSeek-Harness-Move-2.7.1-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.7.2/DeepSeek-Harness-Move-2.7.2-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.7.1-arm64.apk",
-    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.7.1/DeepSeek-Harness-Move-2.7.1-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.7.2-arm64.apk",
+    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.7.2/DeepSeek-Harness-Move-2.7.2-arm64.apk"
   ],
-  "md5": "fe8cf490157a41da9f812ba2185e2bad",
-  "sha256": "ac0a3b7fcd4fe6999e83b130a5c7af8088a64796d396ffc631ddaf37e0374395",
+  "md5": "64c17360b5396551c9f35fba65fa60f1",
+  "sha256": "61b0ae557b0245c7212b0e2580b47073c1d9e71842110d4afe5cf241a7cb7492",
   "size": 39527159,
   "force": false
 }
