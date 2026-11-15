@@ -8,10 +8,12 @@ import axios from 'axios'
 import http, { isMock } from './http'
 import { mockApi } from '@/mock'
 import { catalogApi } from '@/mock/catalog'
-import { applyApi } from '@/mock/pluginApply'
+import { applyApi, type CreateApplyInput } from '@/mock/pluginApply'
 import type {
   AdminUser,
   AlertItem,
+  ApplyEvent,
+  ApplyStatus,
   AuditLog,
   DashboardData,
   DeviceBinding,
@@ -54,9 +56,16 @@ export interface Api {
   publishRelease(payload: ReleasePayload): Promise<boolean>
   // ── 插件申请收录 ──
   pluginApplies(): Promise<PluginApply[]>
+  createApply(input: CreateApplyInput): Promise<PluginApply>
+  importApplies(payload: unknown): Promise<{ added: number; skipped: number }>
+  exportApplies(): Promise<string>
   replyApply(id: string, text: string): Promise<boolean>
   deleteApply(id: string, hard?: boolean): Promise<boolean>
-  scanApply(id: string): Promise<{ virus: VirusStatus; removed: boolean }>
+  scanApply(id: string): Promise<{ virus: VirusStatus; removed: boolean; reason: string }>
+  setApplyStatus(id: string, status: ApplyStatus): Promise<boolean>
+  applyEvents(): Promise<ApplyEvent[]>
+  clearApplies(): Promise<boolean>
+  applyDataSource(): { mode: 'rest' | 'local'; base: string }
 }
 
 // ── Mock 实现 ──
@@ -65,6 +74,7 @@ const mockImpl: Api = {
   ...catalogApi,
   ...applyApi,
   exportTasks: mockApi.exportTasks,
+  applyDataSource: () => applyApi.dataSource(),
 }
 
 // ── 真实后端实现（REST）──
@@ -92,10 +102,18 @@ const realImpl: Api = {
     http.post(`/plugins/${id}/status`, { status, grayPercent }),
   releases: () => http.get('/releases'),
   publishRelease: (payload) => http.post('/releases', payload),
-  pluginApplies: () => http.get('/plugins/apply'),
-  replyApply: (id, text) => http.post(`/plugins/apply/${id}/reply`, { text }),
-  deleteApply: (id, hard) => http.post(`/plugins/apply/${id}/delete`, { hard }),
-  scanApply: (id) => http.post(`/plugins/apply/${id}/scan`),
+  // 申请数据统一由 applyApi 承载：配置 VITE_APPLY_API_BASE 时走 REST，否则走本地持久化
+  pluginApplies: () => applyApi.pluginApplies(),
+  createApply: (input) => applyApi.createApply(input),
+  importApplies: (payload) => applyApi.importApplies(payload),
+  exportApplies: () => applyApi.exportApplies(),
+  replyApply: (id, text) => applyApi.replyApply(id, text),
+  deleteApply: (id, hard) => applyApi.deleteApply(id, hard),
+  scanApply: (id) => applyApi.scanApply(id),
+  setApplyStatus: (id, status) => applyApi.setApplyStatus(id, status),
+  applyEvents: () => applyApi.applyEvents(),
+  clearApplies: () => applyApi.clearApplies(),
+  applyDataSource: () => applyApi.dataSource(),
 }
 
 export const api: Api = isMock ? mockImpl : realImpl

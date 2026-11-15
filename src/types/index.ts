@@ -211,11 +211,16 @@ export interface ApplyAttachment {
   mime: string
   size: number
   isImage: boolean
+  /** 客户端本地路径（手机沙箱路径，服务端不可直接访问） */
   localPath?: string
   /** 临时签名下载链接（OSS/URL，带签名与过期时间） */
   signedUrl?: string
   /** 图片站内预览地址（可直接在网页打开观看 / 下载） */
   previewUrl?: string
+  /** 站内导入的内联文件内容（data URL），可真实预览与下载 */
+  dataUrl?: string
+  /** 附件来源：backend=后端对象存储 / inline=站内导入 / client=仅客户端本地 */
+  origin?: 'backend' | 'inline' | 'client'
 }
 
 export interface PluginApply {
@@ -234,4 +239,22 @@ export interface PluginApply {
   virus: VirusStatus
   virusName: string
   reply: string
+  /** 数据来源：app=客户端提交 / admin=管理端录入 / import=JSON 导入 */
+  source?: 'app' | 'admin' | 'import'
+  /** 软删除标记（记录保留但不在列表展示） */
+  deleted?: boolean
+  replyAt?: string
+  scannedAt?: string
+  /** 原始 payload（客户端提交），便于溯源 */
+  raw?: Record<string, unknown>
+}
+
+/** 管理端对申请的操作留痕 / 推送记录 */
+export interface ApplyEvent {
+  id: string
+  applyId: string
+  action: 'create' | 'reply' | 'scan' | 'delete' | 'soft-delete' | 'status' | 'import' | 'push'
+  detail: string
+  at: string
+  operator: string
 }

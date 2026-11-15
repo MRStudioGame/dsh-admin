@@ -1,9 +1,10 @@
-// ===== Mock 数据引擎 =====
-// 提供与真实后端一致的数据结构与行为：
-//  - 内存数据源（种子数据 + 随机演化）
-//  - 模拟 WebSocket 实时推送（在线人数/KPI/告警）
-//  - 短轮询降级接口
-// 所有方法签名与 src/api 的真实接口一一对应，切换真实后端零改动。
+// ===== 业务数据引擎（v2.7.2 真实数据模式）=====
+// 已彻底移除测试期机器人账号与全部派生假数据：
+//  - 87 个随机中文名账号、500 条任务日志、120 条审计、15 条告警、设备绑定记录全部清空；
+//  - 看板不再出现「12843 注册 / 42 在线 / 300~600 任务」等虚构指标，改为真实计数；
+//  - 实时推送不再凭空生成假告警、假在线会话。
+// 仅保留 3 个管理员登录凭证（删除会导致网站无法登录）。
+// 所有业务数据统一落在 localStorage（v2 版本化 key），刷新不丢失、可审计、可清空。
 
 import type {
   AdminUser,
@@ -19,122 +20,73 @@ import type {
   UserAccount,
 } from '@/types'
 
-// ─────────── 随机工具 ───────────
+// ─────────── 工具 ───────────
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min
-const pick = <T>(arr: readonly T[]): T => arr[rand(0, arr.length - 1)]
 const pad = (n: number) => `${n}`.padStart(2, '0')
 
-function randTime(base = Date.now(), spanDays = 30): string {
-  const t = base - rand(0, spanDays * 86400000)
-  const d = new Date(t)
+function nowText(): string {
+  const d = new Date()
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
 }
 
-const REGIONS = ['广东·深圳', '北京', '上海', '浙江·杭州', '四川·成都', '湖北·武汉', '江苏·南京', '海外']
-const VERSIONS = ['2.2.2', '2.2.1', '2.2.0', '2.0.3']
+// ─────────── 本地持久化仓储 ───────────
+const STORE_PREFIX = 'dsh_admin_real_v2_'
 
-const firstNames = ['星', '云', '海', '山', '风', '月', '林', '雪', '晨', '宇']
-const secondNames = ['卡', '航', '泽', '宁', '辰', '安', '沐', '昕', '涵', '博']
-
-function genUsername(i: number): string {
-  return `${pick(firstNames)}${pick(secondNames)}_${rand(100, 999)}`
+function loadRows<T>(key: string): T[] {
+  try {
+    const raw = localStorage.getItem(STORE_PREFIX + key)
+    if (!raw) return []
+    const parsed: unknown = JSON.parse(raw)
+    return Array.isArray(parsed) ? (parsed as T[]) : []
+  } catch {
+    return []
+  }
 }
 
-function shortDevice(id: string): string {
-  return id.length <= 10 ? id : `${id.slice(0, 6)}…${id.slice(-4)}`
+function saveRows<T>(key: string, rows: T[]): void {
+  try {
+    localStorage.setItem(STORE_PREFIX + key, JSON.stringify(rows))
+  } catch {
+    // 存储配额不足或隐私模式：内存态仍可用，不影响本次操作
+  }
 }
 
-function genDeviceId(): string {
-  return `a${rand(100000000, 999999999)}${rand(100000000, 999999999)}`
+function loadObject<T>(key: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(STORE_PREFIX + key)
+    return raw ? ({ ...fallback, ...JSON.parse(raw) } as T) : { ...fallback }
+  } catch {
+    return { ...fallback }
+  }
 }
 
-// ─────────── 种子数据 ───────────
-const ADMIN_PASSWORD = '201301' // 仅 Mock 用；真实后端走哈希 + Secrets
+function saveObject<T>(key: string, value: T): void {
+  try {
+    localStorage.setItem(STORE_PREFIX + key, JSON.stringify(value))
+  } catch {
+    // 同上
+  }
+}
+
+// ─────────── 管理员登录凭证（非机器人账号，保留）───────────
+const ADMIN_PASSWORD = '201301' // 静态站点演示口令；接入真实后端后走哈希 + Secrets
 
 const admins: AdminUser[] = [
-  { id: 'a1', username: 'admin', nickname: '超级管理员', role: 'super', roleName: '超级管理员', lastLoginAt: randTime(), status: 'active' },
-  { id: 'a2', username: 'operator', nickname: '运营小王', role: 'operator', roleName: '运营管理员', lastLoginAt: randTime(), status: 'active' },
-  { id: 'a3', username: 'viewer', nickname: '观察员小李', role: 'viewer', roleName: '只读观察员', lastLoginAt: randTime(), status: 'active' },
+  { id: 'a1', username: 'admin', nickname: '超级管理员', role: 'super', roleName: '超级管理员', lastLoginAt: nowText(), status: 'active' },
+  { id: 'a2', username: 'operator', nickname: '运营管理员', role: 'operator', roleName: '运营管理员', lastLoginAt: nowText(), status: 'active' },
+  { id: 'a3', username: 'viewer', nickname: '只读观察员', role: 'viewer', roleName: '只读观察员', lastLoginAt: nowText(), status: 'active' },
 ]
 
-const users: UserAccount[] = Array.from({ length: 87 }, (_, i) => {
-  const deviceId = genDeviceId()
-  const status = i % 9 === 0 ? 'frozen' : 'active'
-  return {
-    id: `u_${1000 + i}`,
-    username: genUsername(i),
-    deviceId,
-    deviceShort: shortDevice(deviceId),
-    status: status as 'active' | 'frozen',
-    createdAt: randTime(Date.now(), 120),
-    lastLoginAt: randTime(Date.now(), 14),
-    taskCount: rand(0, 240),
-    clientVersion: pick(VERSIONS),
-    ipRegion: pick(REGIONS),
-  }
-})
+let currentAdmin: AdminUser = admins[0]
 
-const devices: DeviceBinding[] = users.map((u) => ({
-  deviceId: u.deviceId,
-  deviceShort: u.deviceShort,
-  username: u.username,
-  boundAt: u.createdAt,
-  lastActiveAt: u.lastLoginAt,
-  clientVersion: u.clientVersion,
-  online: Math.random() > 0.7,
-}))
+// ─────────── 业务数据：空库起步（机器人账号已全部清除）───────────
+let users: UserAccount[] = loadRows<UserAccount>('users')
+let devices: DeviceBinding[] = loadRows<DeviceBinding>('devices')
+let tasks: TaskLog[] = loadRows<TaskLog>('tasks')
+let audits: AuditLog[] = loadRows<AuditLog>('audits')
+let alerts: AlertItem[] = loadRows<AlertItem>('alerts')
 
-const TASK_TYPES = ['chat', 'agent', 'automation'] as const
-const TASK_TYPE_NAMES: Record<string, string> = { chat: '对话', agent: 'Agent 任务', automation: '自动化' }
-const TASK_STATUSES = ['success', 'failed', 'running', 'cancelled'] as const
-const TASK_STATUS_NAMES: Record<string, string> = { success: '成功', failed: '失败', running: '执行中', cancelled: '已取消' }
-
-const tasks: TaskLog[] = Array.from({ length: 500 }, (_, i) => {
-  const type = pick(TASK_TYPES)
-  const status = pick(TASK_STATUSES)
-  const start = Date.now() - rand(0, 30 * 86400000)
-  const duration = rand(300, 120000)
-  return {
-    id: `t_${20000 + i}`,
-    taskNo: `DSH${Date.now().toString().slice(-6)}${i}`.slice(0, 14),
-    username: pick(users).username,
-    type,
-    typeName: TASK_TYPE_NAMES[type],
-    status,
-    statusName: TASK_STATUS_NAMES[status],
-    startAt: randTime(start, 0),
-    endAt: status === 'running' ? '' : randTime(start + duration, 0),
-    durationMs: status === 'running' ? 0 : duration,
-    result: status === 'success' ? '任务执行完成' : status === 'failed' ? '执行异常：节点超时' : '',
-    deviceShort: pick(devices).deviceShort,
-  }
-})
-
-const auditActions = ['冻结账号', '解封账号', '重置密码', '解绑设备', '强制下线', '修改限流阈值', '导出任务日志', '修改告警规则']
-const audits: AuditLog[] = Array.from({ length: 120 }, (_, i) => ({
-  id: `aud_${i}`,
-  operator: pick(admins).nickname,
-  action: pick(auditActions),
-  target: pick(users).username,
-  detail: '操作详情留痕',
-  ip: `10.0.${rand(0, 255)}.${rand(0, 255)}`,
-  createdAt: randTime(Date.now(), 30),
-}))
-
-let alerts: AlertItem[] = Array.from({ length: 15 }, (_, i) => {
-  const level = pick(['info', 'warning', 'critical'] as const)
-  return {
-    id: `al_${i}`,
-    level,
-    levelName: level === 'info' ? '提示' : level === 'warning' ? '警告' : '严重',
-    title: pick(['高频请求触发限流', '任务连续异常', '异常设备访问', '并发负载过高', '新设备首次登录']),
-    detail: pick(users).username,
-    time: randTime(Date.now(), 3),
-    read: Math.random() > 0.5,
-  }
-})
-
-let systemConfig: SystemConfig = {
+const defaultConfig: SystemConfig = {
   rateLimitPerMin: 60,
   dashboardRefreshSec: 5,
   alertThresholdConsecutiveFail: 3,
@@ -142,70 +94,74 @@ let systemConfig: SystemConfig = {
   sessionTimeoutMin: 30,
   allowRemoteLogout: true,
 }
+let systemConfig: SystemConfig = loadObject<SystemConfig>('config', defaultConfig)
 
-// 在线人数演化基线
-let onlineBase = 42
-let concurrencyBase = 8
+/** 审计留痕：所有管理动作写入真实日志并持久化 */
+function audit(action: string, target: string, detail = ''): void {
+  audits.unshift({
+    id: `aud_${Date.now()}_${rand(100, 999)}`,
+    operator: currentAdmin.nickname,
+    action,
+    target,
+    detail,
+    ip: '本地会话',
+    createdAt: nowText(),
+  })
+  audits = audits.slice(0, 500)
+  saveRows('audits', audits)
+}
 
-// ─────────── 看板数据生成 ───────────
-function genSeries(hours: number, base: number, amp: number): { time: string; value: number }[] {
+// ─────────── 看板：全部基于真实数据 ───────────
+function zeroSeries(hours: number): { time: string; value: number }[] {
   const now = Date.now()
-  const out: { time: string; value: number }[] = []
   const step = (24 / hours) * 3600000
-  for (let i = hours - 1; i >= 0; i--) {
-    const t = new Date(now - i * step)
-    const v = Math.max(0, Math.round(base + Math.sin((i / hours) * Math.PI * 2) * amp + rand(-3, 3)))
-    out.push({ time: `${pad(t.getHours())}:00`, value: v })
-  }
-  return out
+  return Array.from({ length: hours }, (_, i) => {
+    const t = new Date(now - (hours - 1 - i) * step)
+    return { time: `${pad(t.getHours())}:00`, value: 0 }
+  })
 }
 
 function genDashboard(): DashboardData {
-  const onlineNow = onlineBase + rand(-4, 6)
-  const regToday = rand(8, 30)
-  const taskTotal = rand(300, 600)
-  const taskSuccess = Math.round(taskTotal * (0.78 + Math.random() * 0.1))
-  const taskFailed = taskTotal - taskSuccess
+  const onlineNow = devices.filter((d) => d.online).length
+  const activeUsers = users.filter((u) => u.status === 'active').length
+  const taskTotal = tasks.length
+  const taskSuccess = tasks.filter((t) => t.status === 'success').length
+  const taskFailed = tasks.filter((t) => t.status === 'failed').length
+  const runningTasks = tasks.filter((t) => t.status === 'running').length
 
   const kpis: KpiCard[] = [
-    { key: 'totalUsers', label: '总注册账号数', value: 12843, trend: 12.4, trendLabel: '较上月', compareType: 'mom' },
-    { key: 'online', label: '实时在线用户', value: onlineNow, unit: '人', trend: 5.2, trendLabel: '较昨日', compareType: 'mom' },
-    { key: 'regToday', label: '今日新增注册', value: regToday, trend: -3.1, trendLabel: '较昨日', compareType: 'mom' },
-    { key: 'taskTotal', label: '任务总执行量', value: taskTotal, trend: 18.9, trendLabel: '较昨日', compareType: 'mom' },
-    { key: 'taskSuccess', label: '任务成功量', value: taskSuccess, trend: 21.3, trendLabel: '较昨日', compareType: 'mom' },
-    { key: 'taskFailed', label: '任务失败量', value: taskFailed, trend: -8.6, trendLabel: '较昨日', compareType: 'mom' },
-    { key: 'concurrency', label: '系统并发负载', value: concurrencyBase + rand(-2, 4), unit: '任务/分', trend: 7.7, trendLabel: '较昨日', compareType: 'mom' },
+    { key: 'totalUsers', label: '总注册账号数', value: users.length, trend: 0, trendLabel: '当前', compareType: 'mom' },
+    { key: 'online', label: '实时在线设备', value: onlineNow, unit: '台', trend: 0, trendLabel: '当前', compareType: 'mom' },
+    { key: 'activeUsers', label: '正常状态账号', value: activeUsers, trend: 0, trendLabel: '当前', compareType: 'mom' },
+    { key: 'taskTotal', label: '任务总执行量', value: taskTotal, trend: 0, trendLabel: '当前', compareType: 'mom' },
+    { key: 'taskSuccess', label: '任务成功量', value: taskSuccess, trend: 0, trendLabel: '当前', compareType: 'mom' },
+    { key: 'taskFailed', label: '任务失败量', value: taskFailed, trend: 0, trendLabel: '当前', compareType: 'mom' },
+    { key: 'concurrency', label: '执行中任务', value: runningTasks, unit: '个', trend: 0, trendLabel: '当前', compareType: 'mom' },
   ]
 
   return {
     kpis,
-    onlineTrend: genSeries(24, 40, 18),
-    registerTrend: genSeries(30, 20, 12),
-    dailyRegister: genSeries(7, 18, 8),
-    dailyTasks: genSeries(7, 420, 120),
+    onlineTrend: zeroSeries(24),
+    registerTrend: zeroSeries(30),
+    dailyRegister: zeroSeries(7),
+    dailyTasks: zeroSeries(7),
     taskTypeDist: [
-      { name: '对话', value: Math.round(taskTotal * 0.52) },
-      { name: 'Agent 任务', value: Math.round(taskTotal * 0.33) },
-      { name: '自动化', value: Math.round(taskTotal * 0.15) },
+      { name: '对话', value: tasks.filter((t) => t.type === 'chat').length },
+      { name: 'Agent 任务', value: tasks.filter((t) => t.type === 'agent').length },
+      { name: '自动化', value: tasks.filter((t) => t.type === 'automation').length },
     ],
-    deviceDist: [
-      { name: '小米', value: rand(30, 40) },
-      { name: '华为', value: rand(20, 30) },
-      { name: 'OPPO', value: rand(15, 22) },
-      { name: 'vivo', value: rand(12, 20) },
-      { name: '其他', value: rand(8, 15) },
-    ],
+    deviceDist: [],
     funnel: [
-      { name: '注册', value: 12843 },
-      { name: '登录', value: 9850 },
-      { name: '发起任务', value: 6340 },
-      { name: '完成任务', value: 5110 },
+      { name: '注册', value: users.length },
+      { name: '绑定设备', value: devices.length },
+      { name: '发起任务', value: taskTotal },
+      { name: '完成任务', value: taskSuccess },
     ],
-    concurrency: concurrencyBase + rand(-2, 4),
+    concurrency: runningTasks,
   }
 }
 
-// ─────────── 模拟实时推送（WebSocket 风格）───────────
+// ─────────── 实时推送（仅推送真实数据快照，不伪造告警）───────────
 type Listener = (data: unknown) => void
 const listeners = new Map<string, Set<Listener>>()
 
@@ -216,30 +172,12 @@ function emit(channel: string, data: unknown) {
 let wsTimer: ReturnType<typeof setInterval> | null = null
 let wsStarted = false
 
-/** 启动模拟实时推送（每 3 秒推在线人数 + KPI 快照 + 随机告警） */
 export function startRealtime() {
   if (wsStarted) return
   wsStarted = true
   wsTimer = setInterval(() => {
-    onlineBase = Math.max(8, onlineBase + rand(-3, 3))
-    concurrencyBase = Math.max(2, concurrencyBase + rand(-2, 2))
     emit('kpi', genDashboard())
     emit('online', genOnlineUsers())
-    // 随机新告警
-    if (Math.random() > 0.6) {
-      const level = pick(['info', 'warning', 'critical'] as const)
-      const a: AlertItem = {
-        id: `al_${Date.now()}`,
-        level,
-        levelName: level === 'info' ? '提示' : level === 'warning' ? '警告' : '严重',
-        title: pick(['高频请求触发限流', '任务连续异常', '异常设备访问', '并发负载过高']),
-        detail: pick(users).username,
-        time: randTime(),
-        read: false,
-      }
-      alerts = [a, ...alerts].slice(0, 50)
-      emit('alert', alerts)
-    }
   }, 3000)
 }
 
@@ -254,44 +192,41 @@ export function stopRealtime() {
   wsStarted = false
 }
 
-// ─────────── 在线用户 ───────────
+/** 在线会话：仅来自真实设备绑定，无绑定即为空 */
 function genOnlineUsers(): OnlineUser[] {
-  const count = Math.max(3, onlineBase)
-  return Array.from({ length: Math.min(count, 30) }, () => {
-    const u = pick(users)
-    return {
-      sessionId: `s_${rand(10000, 99999)}`,
-      username: u.username,
-      deviceId: u.deviceId,
-      deviceShort: u.deviceShort,
-      loginAt: randTime(Date.now(), 1),
-      clientVersion: u.clientVersion,
-      ipRegion: u.ipRegion,
-      lastHeartbeat: randTime(),
-    }
-  })
+  return devices.filter((d) => d.online).map((d) => ({
+    sessionId: `s_${d.deviceId.slice(-8)}`,
+    username: d.username,
+    deviceId: d.deviceId,
+    deviceShort: d.deviceShort,
+    loginAt: d.lastActiveAt,
+    clientVersion: d.clientVersion,
+    ipRegion: '—',
+    lastHeartbeat: nowText(),
+  }))
 }
 
-// ─────────── Mock API 实现（与真实接口同签名）───────────
+// ─────────── 数据引擎 API（与真实后端同签名）───────────
 export const mockApi = {
-  // 登录
   async login(username: string, password: string) {
     await sleep(400)
     const admin = admins.find((a) => a.username === username)
     if (!admin || password !== ADMIN_PASSWORD || admin.status === 'disabled') {
       throw { response: { status: 401, data: { message: '账号或密码错误' } } }
     }
+    currentAdmin = admin
+    admin.lastLoginAt = nowText()
+    audit('管理员登录', username)
     const token = btoa(`${username}:${Date.now()}:mock-jwt`)
-    const expiresAt = Date.now() + (systemConfig.sessionTimeoutMin * 60000)
+    const expiresAt = Date.now() + systemConfig.sessionTimeoutMin * 60000
     return { token, expiresAt, admin }
   },
 
   async me() {
     await sleep(100)
-    return admins[0]
+    return currentAdmin
   },
 
-  // 看板
   async dashboard(): Promise<DashboardData> {
     await sleep(200)
     return genDashboard()
@@ -304,6 +239,7 @@ export const mockApi = {
 
   async markAlertRead(id: string) {
     alerts = alerts.map((a) => (a.id === id ? { ...a, read: true } : a))
+    saveRows('alerts', alerts)
     return true
   },
 
@@ -314,19 +250,18 @@ export const mockApi = {
 
   async forceLogout(sessionId: string) {
     await sleep(300)
-    audits.unshift({
-      id: `aud_${Date.now()}`,
-      operator: '超级管理员',
-      action: '强制下线',
-      target: sessionId,
-      detail: '远程强制下线会话',
-      ip: '10.0.0.1',
-      createdAt: randTime(),
-    })
+    const target = genOnlineUsers().find((u) => u.sessionId === sessionId)
+    if (target) {
+      devices = devices.map((d) =>
+        d.deviceId === target.deviceId ? { ...d, online: false } : d,
+      )
+      saveRows('devices', devices)
+    }
+    audit('强制下线', sessionId, '远程强制下线会话')
     return true
   },
 
-  // 用户账号
+  // 用户账号（空库起步，支持真实账号写入）
   async users(query: Record<string, unknown>): Promise<PageResult<UserAccount>> {
     await sleep(300)
     let list = [...users]
@@ -344,19 +279,24 @@ export const mockApi = {
     await sleep(300)
     const u = users.find((x) => x.id === id)
     if (u) u.status = freeze ? 'frozen' : 'active'
-    audits.unshift({ id: `aud_${Date.now()}`, operator: '超级管理员', action: freeze ? '冻结账号' : '解封账号', target: u?.username || id, detail: '', ip: '10.0.0.1', createdAt: randTime() })
+    saveRows('users', users)
+    audit(freeze ? '冻结账号' : '解封账号', u?.username || id)
     return true
   },
 
   async resetPassword(id: string) {
     await sleep(300)
-    audits.unshift({ id: `aud_${Date.now()}`, operator: '超级管理员', action: '重置密码', target: id, detail: '密码已重置为初始密码', ip: '10.0.0.1', createdAt: randTime() })
+    audit('重置密码', id, '密码已重置为初始密码')
     return { newPassword: '1234' }
   },
 
   async batchFreeze(ids: string[], freeze: boolean) {
     await sleep(400)
-    users.forEach((u) => { if (ids.includes(u.id)) u.status = freeze ? 'frozen' : 'active' })
+    users.forEach((u) => {
+      if (ids.includes(u.id)) u.status = freeze ? 'frozen' : 'active'
+    })
+    saveRows('users', users)
+    audit(freeze ? '批量冻结' : '批量解封', `${ids.length} 个账号`)
     return true
   },
 
@@ -375,9 +315,9 @@ export const mockApi = {
 
   async unbindDevice(deviceId: string) {
     await sleep(300)
-    const idx = devices.findIndex((d) => d.deviceId === deviceId)
-    if (idx >= 0) devices.splice(idx, 1)
-    audits.unshift({ id: `aud_${Date.now()}`, operator: '超级管理员', action: '解绑设备', target: deviceId, detail: '', ip: '10.0.0.1', createdAt: randTime() })
+    devices = devices.filter((d) => d.deviceId !== deviceId)
+    saveRows('devices', devices)
+    audit('解绑设备', deviceId)
     return true
   },
 
@@ -416,7 +356,6 @@ export const mockApi = {
     return { list: list.slice(start, start + pageSize), total, page, pageSize }
   },
 
-  // 系统配置
   async getConfig(): Promise<SystemConfig> {
     await sleep(200)
     return { ...systemConfig }
@@ -425,7 +364,8 @@ export const mockApi = {
   async saveConfig(cfg: SystemConfig) {
     await sleep(400)
     systemConfig = { ...cfg }
-    audits.unshift({ id: `aud_${Date.now()}`, operator: '超级管理员', action: '修改系统配置', target: '全局配置', detail: '更新限流/看板/告警参数', ip: '10.0.0.1', createdAt: randTime() })
+    saveObject('config', systemConfig)
+    audit('修改系统配置', '全局配置', '更新限流/看板/告警参数')
     return true
   },
 }
