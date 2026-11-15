@@ -4,6 +4,7 @@
 //  - 真实后端：走 http 实例的 REST 调用（下半部分）
 // 上层组件只依赖这里的方法签名，切换数据源零改动。
 
+import axios from 'axios'
 import http, { isMock } from './http'
 import { mockApi } from '@/mock'
 import type {
@@ -70,3 +71,36 @@ const realImpl: Api = {
 }
 
 export const api: Api = isMock ? mockImpl : realImpl
+
+// ── 客户端 App 内更新：版本发布接口 ──────────────────────────────
+// 客户端不依赖管理端 UI，直接 GET 同一个清单：
+//  - 静态 Pages 部署：GET {BASE_URL}api/app-version.json（public/ 下原样发布）
+//  - 接入独立后端后：GET {VITE_API_BASE}/app-version.json
+// 字段即「版本信息 / 更新日志 / APK 直链 / MD5 / 包大小」，无明文密钥。
+export interface AppRelease {
+  app: string
+  package: string
+  channel: string
+  version: string
+  build: number
+  minSdk: number
+  date: string
+  notes: string
+  changelog: string[]
+  apkUrl: string
+  apkFallbackUrls: string[]
+  md5: string
+  sha256: string
+  size: number
+  force: boolean
+}
+
+export async function fetchAppRelease(): Promise<AppRelease> {
+  const apiBase = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '')
+  const staticBase = new URL(import.meta.env.BASE_URL, window.location.href).toString()
+  const url = apiBase
+    ? `${apiBase}/app-version.json`
+    : new URL('api/app-version.json', staticBase).toString()
+  const res = await axios.get<AppRelease>(url, { params: { t: Date.now() } })
+  return res.data
+}

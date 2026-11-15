@@ -1,0 +1,27 @@
+{
+  "app": "DeepSeek Harness Move",
+  "package": "com.dshmove.app",
+  "channel": "stable",
+  "version": "2.4.0",
+  "build": 2400,
+  "minSdk": 26,
+  "date": "2026-11-15",
+  "notes": "全局登录状态分流、自研用户信息面板、统一弹窗容器、App 内更新（管理端版本接口 + 前台下载 + MD5 校验 + 安装引导）。",
+  "changelog": [
+    "账号昵称点击优先读取全局登录状态：已登录拉起自研用户信息面板，游客才走登录弹窗原始动画链路",
+    "用户信息面板：账号名称、绑定设备 ID、设备绑定信息、会话同步配置入口、退出登录",
+    "所有自定义弹窗统一自研容器，禁用原生弹窗组件，遮罩铺满全屏视口、消除四周黑边",
+    "登录弹窗渲染前强制前置状态校验，已登录直接拦截并写入调试日志",
+    "更新逻辑改为 App 内更新：版本/更新日志/APK 直链/MD5 从管理端接口拉取",
+    "内置前台下载任务：进度展示、暂停/继续/取消、断点续传、MD5 校验、安装未知应用权限引导"
+  ],
+  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.4.0/DeepSeek-Harness-Move-2.4.0-arm64.apk",
+  "apkFallbackUrls": [
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.4.0-arm64.apk",
+    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.4.0/DeepSeek-Harness-Move-2.4.0-arm64.apk"
+  ],
+  "md5": "1b62ca8c9b992dc79bc44df6d4fe8ab7",
+  "sha256": "b9755abee893fa5870717e2a98833537b9057550fe510ad01fba14af70f8739b",
+  "size": 39460843,
+  "force": false
+}
