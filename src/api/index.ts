@@ -8,6 +8,7 @@ import axios from 'axios'
 import http, { isMock } from './http'
 import { mockApi } from '@/mock'
 import { catalogApi } from '@/mock/catalog'
+import { applyApi } from '@/mock/pluginApply'
 import type {
   AdminUser,
   AlertItem,
@@ -17,6 +18,7 @@ import type {
   LoginResult,
   OnlineUser,
   PageResult,
+  PluginApply,
   PluginItem,
   PluginStatus,
   ReleasePayload,
@@ -24,6 +26,7 @@ import type {
   SystemConfig,
   TaskLog,
   UserAccount,
+  VirusStatus,
 } from '@/types'
 
 export interface Api {
@@ -49,12 +52,18 @@ export interface Api {
   setPluginStatus(id: string, status: PluginStatus, grayPercent?: number): Promise<boolean>
   releases(): Promise<ReleaseRecord[]>
   publishRelease(payload: ReleasePayload): Promise<boolean>
+  // ── 插件申请收录 ──
+  pluginApplies(): Promise<PluginApply[]>
+  replyApply(id: string, text: string): Promise<boolean>
+  deleteApply(id: string, hard?: boolean): Promise<boolean>
+  scanApply(id: string): Promise<{ virus: VirusStatus; removed: boolean }>
 }
 
 // ── Mock 实现 ──
 const mockImpl: Api = {
   ...mockApi,
   ...catalogApi,
+  ...applyApi,
   exportTasks: mockApi.exportTasks,
 }
 
@@ -83,6 +92,10 @@ const realImpl: Api = {
     http.post(`/plugins/${id}/status`, { status, grayPercent }),
   releases: () => http.get('/releases'),
   publishRelease: (payload) => http.post('/releases', payload),
+  pluginApplies: () => http.get('/plugins/apply'),
+  replyApply: (id, text) => http.post(`/plugins/apply/${id}/reply`, { text }),
+  deleteApply: (id, hard) => http.post(`/plugins/apply/${id}/delete`, { hard }),
+  scanApply: (id) => http.post(`/plugins/apply/${id}/scan`),
 }
 
 export const api: Api = isMock ? mockImpl : realImpl

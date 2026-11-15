@@ -200,3 +200,38 @@ export interface ReleasePayload {
   notes: string
   changelog: string[]
 }
+
+// ── 插件申请收录 ──
+export type ApplyType = 'replicate' | 'developer' | 'idea'
+export type VirusStatus = 'unknown' | 'clean' | 'infected'
+export type ApplyStatus = 'pending' | 'reviewing' | 'approved' | 'rejected'
+
+export interface ApplyAttachment {
+  name: string
+  mime: string
+  size: number
+  isImage: boolean
+  localPath?: string
+  /** 临时签名下载链接（OSS/URL，带签名与过期时间） */
+  signedUrl?: string
+  /** 图片站内预览地址（可直接在网页打开观看 / 下载） */
+  previewUrl?: string
+}
+
+export interface PluginApply {
+  id: string
+  applicantId: string
+  type: ApplyType
+  typeName: string
+  pluginName: string
+  pcPluginName: string
+  description: string
+  techNotes: string
+  attachments: ApplyAttachment[]
+  createdAt: string
+  status: ApplyStatus
+  statusName: string
+  virus: VirusStatus
+  virusName: string
+  reply: string
+}

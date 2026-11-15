@@ -5,8 +5,8 @@ import type { RoleCode } from '@/types'
 
 // 角色 → 可访问菜单 key 列表
 export const roleMenus: Record<RoleCode, string[]> = {
-  super: ['dashboard', 'users', 'devices', 'tasks', 'audit', 'plugins', 'releases', 'settings'],
-  operator: ['dashboard', 'users', 'devices', 'tasks', 'plugins', 'releases', 'settings'],
+  super: ['dashboard', 'users', 'devices', 'tasks', 'audit', 'plugins', 'plugins-apply', 'releases', 'settings'],
+  operator: ['dashboard', 'users', 'devices', 'tasks', 'plugins', 'plugins-apply', 'releases', 'settings'],
   viewer: ['dashboard', 'users', 'devices', 'tasks', 'audit'],
 }
 
@@ -23,10 +23,11 @@ export type PermCode =
   | 'alert:read'
   | 'release:publish'
   | 'plugin:manage'
+  | 'plugin:apply'
 
 const rolePerms: Record<RoleCode, PermCode[]> = {
-  super: ['user:freeze', 'user:reset', 'user:batch', 'user:export', 'device:unbind', 'task:export', 'online:kick', 'config:edit', 'alert:read', 'release:publish', 'plugin:manage'],
-  operator: ['user:freeze', 'user:reset', 'user:batch', 'user:export', 'device:unbind', 'task:export', 'online:kick', 'alert:read', 'plugin:manage'],
+  super: ['user:freeze', 'user:reset', 'user:batch', 'user:export', 'device:unbind', 'task:export', 'online:kick', 'config:edit', 'alert:read', 'release:publish', 'plugin:manage', 'plugin:apply'],
+  operator: ['user:freeze', 'user:reset', 'user:batch', 'user:export', 'device:unbind', 'task:export', 'online:kick', 'alert:read', 'plugin:manage', 'plugin:apply'],
   viewer: ['user:export', 'task:export', 'alert:read'],
 }
 

@@ -51,6 +51,12 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '插件全生命周期', menu: 'plugins', roles: ['super', 'operator'] },
       },
       {
+        path: 'plugins/apply',
+        name: 'plugins-apply',
+        component: () => import('@/views/plugins/apply.vue'),
+        meta: { title: '插件申请管理', menu: 'plugins-apply', roles: ['super', 'operator'] },
+      },
+      {
         path: 'releases',
         name: 'releases',
         component: () => import('@/views/releases/index.vue'),

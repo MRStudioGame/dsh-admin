@@ -9,6 +9,7 @@ import {
   List,
   Document,
   Box,
+  Files,
   Upload,
   Setting,
   SwitchButton,
@@ -30,6 +31,7 @@ const menus = [
   { key: 'tasks', title: '任务日志管理', icon: List, path: '/tasks' },
   { key: 'audit', title: '操作审计日志', icon: Document, path: '/audit' },
   { key: 'plugins', title: '插件全生命周期', icon: Box, path: '/plugins' },
+  { key: 'plugins-apply', title: '插件申请管理', icon: Files, path: '/plugins/apply' },
   { key: 'releases', title: '客户端版本发布', icon: Upload, path: '/releases' },
   { key: 'settings', title: '系统全局配置', icon: Setting, path: '/settings' },
 ]

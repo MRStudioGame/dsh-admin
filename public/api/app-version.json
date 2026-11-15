@@ -2,25 +2,25 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "2.6.0",
-  "build": 2600,
+  "version": "2.7.0",
+  "build": 2700,
   "minSdk": 26,
   "date": "2026-11-15",
-  "notes": "P0 稳定性重构：UI 线程阻塞消除、FileProvider 合规分享、状态机强制闭环复位。",
+  "notes": "插件市场性能与业务闭环：管理按钮防抖 + 解析异步隔离，插件启用实质能力注入，新增「申请收录插件」状态机业务流与管理端「插件申请管理」模块。",
   "changelog": [
-    "新增后台执行器与状态机守卫：文件 I/O、网络、模型生成、UI 树遍历全部移出主线程，杜绝 ANR 与事件流死锁",
-    "新增原生 FileProvider 分享桥，导出文件经 content:// URI 安全分享至微信 / WPS，解决「点击无反应」",
-    "强制状态机闭环：所有任务挂载 Timeout + try-catch-finally 兜底复位，异常必发终态事件并解除 Loading 态",
-    "chat/会话/导出/存储/工作区/设备任务的同步 I/O 全部改为异步，构建期 IO 彻底清零",
-    "保留常驻能力守卫、三权限探针、全局悬浮确认、账号分流、380ms 弹簧与拖拽回弹全部规范不变"
+    "P0 性能治理：管理按钮防抖/节流/重入保护，PluginStore 解析迁入 Isolate，杜绝主线程序列化卡顿与 ANR",
+    "P0 能力注入：插件启用按声明推导并持久化挂载后台能力钩子（无障碍监听/通知/Intent 拦截/截图/语音/UI 渲染），关闭即反注册",
+    "新增「申请收录插件」多级状态机：复刻 PC 插件表单 + 媒体选择；创建 → 开发者/想法 底部面板 + 文件选择 + 校验 + Toast + 日志",
+    "管理端新增「插件申请管理」：数据表格、病毒扫描（命中即拒删）、回复（Push 模拟）、软/硬删除二次确认",
+    "保留常驻能力守卫、三权限探针、全局悬浮确认、账号分流、380ms 弹簧与拖拽回弹、App 内更新全部规范不变"
   ],
-  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.6.0/DeepSeek-Harness-Move-2.6.0-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.7.0/DeepSeek-Harness-Move-2.7.0-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.6.0-arm64.apk",
-    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.6.0/DeepSeek-Harness-Move-2.6.0-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.7.0-arm64.apk",
+    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.7.0/DeepSeek-Harness-Move-2.7.0-arm64.apk"
   ],
-  "md5": "a1df9d3ad07adb5efca4a1510bc65f92",
-  "sha256": "1c65684cb56a9145b552777d2cf5056f48ec799aa2972e4d95ba988b7f28b7a6",
-  "size": 39461271,
+  "md5": "029edf1f6b0116e151a2e62bfcdf02a7",
+  "sha256": "69178803fdb80c4a04c52bf94e5badbd3caae64c06353861f7e178c21f7e78d6",
+  "size": 39527159,
   "force": false
 }
