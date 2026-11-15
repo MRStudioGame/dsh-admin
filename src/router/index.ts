@@ -45,6 +45,18 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '操作审计日志', menu: 'audit', roles: ['super', 'viewer'] },
       },
       {
+        path: 'plugins',
+        name: 'plugins',
+        component: () => import('@/views/plugins/index.vue'),
+        meta: { title: '插件全生命周期', menu: 'plugins', roles: ['super', 'operator'] },
+      },
+      {
+        path: 'releases',
+        name: 'releases',
+        component: () => import('@/views/releases/index.vue'),
+        meta: { title: '客户端版本发布', menu: 'releases', roles: ['super', 'operator'] },
+      },
+      {
         path: 'settings',
         name: 'settings',
         component: () => import('@/views/settings/index.vue'),

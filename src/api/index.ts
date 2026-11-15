@@ -7,6 +7,7 @@
 import axios from 'axios'
 import http, { isMock } from './http'
 import { mockApi } from '@/mock'
+import { catalogApi } from '@/mock/catalog'
 import type {
   AdminUser,
   AlertItem,
@@ -16,6 +17,10 @@ import type {
   LoginResult,
   OnlineUser,
   PageResult,
+  PluginItem,
+  PluginStatus,
+  ReleasePayload,
+  ReleaseRecord,
   SystemConfig,
   TaskLog,
   UserAccount,
@@ -40,11 +45,16 @@ export interface Api {
   audits(query: Record<string, unknown>): Promise<PageResult<AuditLog>>
   getConfig(): Promise<SystemConfig>
   saveConfig(cfg: SystemConfig): Promise<boolean>
+  plugins(): Promise<PluginItem[]>
+  setPluginStatus(id: string, status: PluginStatus, grayPercent?: number): Promise<boolean>
+  releases(): Promise<ReleaseRecord[]>
+  publishRelease(payload: ReleasePayload): Promise<boolean>
 }
 
 // ── Mock 实现 ──
 const mockImpl: Api = {
   ...mockApi,
+  ...catalogApi,
   exportTasks: mockApi.exportTasks,
 }
 
@@ -68,6 +78,11 @@ const realImpl: Api = {
   audits: (q) => http.get('/audits', { params: q }),
   getConfig: () => http.get('/config'),
   saveConfig: (cfg) => http.post('/config', cfg),
+  plugins: () => http.get('/plugins'),
+  setPluginStatus: (id, status, grayPercent) =>
+    http.post(`/plugins/${id}/status`, { status, grayPercent }),
+  releases: () => http.get('/releases'),
+  publishRelease: (payload) => http.post('/releases', payload),
 }
 
 export const api: Api = isMock ? mockImpl : realImpl

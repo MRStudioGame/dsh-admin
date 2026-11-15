@@ -150,3 +150,53 @@ export interface PageQuery {
   pageSize: number
   [key: string]: unknown
 }
+
+// ── 插件全生命周期 ──
+export type PluginStatus = 'published' | 'gray' | 'offline' | 'draft'
+
+export interface PluginItem {
+  id: string
+  name: string
+  category: 'UI 美化插件' | '实用插件' | '娱乐与便利插件' | 'AGI 架构探索'
+  author: string
+  version: string
+  status: PluginStatus
+  statusName: string
+  installs: number
+  rating: number
+  grayPercent: number
+  updatedAt: string
+  desc: string
+}
+
+// ── 版本发布（OTA）──
+export type ReleaseStatus = 'released' | 'gray' | 'archived'
+
+export interface ReleaseRecord {
+  version: string
+  build: number
+  date: string
+  channel: string
+  status: ReleaseStatus
+  statusName: string
+  apkUrl: string
+  md5: string
+  sha256: string
+  size: number
+  force: boolean
+  notes: string
+  changelog: string[]
+}
+
+export interface ReleasePayload {
+  version: string
+  build: number
+  channel: string
+  apkUrl: string
+  md5: string
+  sha256: string
+  size: number
+  force: boolean
+  notes: string
+  changelog: string[]
+}

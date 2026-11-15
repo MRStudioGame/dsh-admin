@@ -8,6 +8,8 @@ import {
   Monitor,
   List,
   Document,
+  Box,
+  Upload,
   Setting,
   SwitchButton,
   Fold,
@@ -27,6 +29,8 @@ const menus = [
   { key: 'devices', title: '设备绑定管理', icon: Monitor, path: '/devices' },
   { key: 'tasks', title: '任务日志管理', icon: List, path: '/tasks' },
   { key: 'audit', title: '操作审计日志', icon: Document, path: '/audit' },
+  { key: 'plugins', title: '插件全生命周期', icon: Box, path: '/plugins' },
+  { key: 'releases', title: '客户端版本发布', icon: Upload, path: '/releases' },
   { key: 'settings', title: '系统全局配置', icon: Setting, path: '/settings' },
 ]
 
