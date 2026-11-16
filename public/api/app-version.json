@@ -2,26 +2,27 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "2.7.2",
-  "build": 2702,
+  "version": "2.7.3",
+  "build": 2703,
   "minSdk": 26,
-  "date": "2026-11-15",
-  "notes": "每次进入 App 自动检测更新，有新版本立即弹出更新提示；移除 12 小时稍后提醒抑制，新增后台回前台生命周期检测。",
+  "date": "2026-11-16",
+  "notes": "全局 UI 性能攻坚（帧/点击耗时告警、管理键防抖+帧解耦）+ 插件市场高保真重构（语义化 SVG 图标、真实截图+骨架屏）+ 申请插件状态机修复。",
   "changelog": [
-    "每次进入 App 自动检测更新：冷启动检测 + 从后台/锁屏回到前台检测，命中新版本立即弹出自研更新提示",
-    "移除「稍后提醒」12 小时抑制：关闭本次提示后，下次进入 App 仍会正常提醒，不再静默跳过",
-    "顶层 State 接入生命周期监听，仅后台→前台才触发，避免冷启动重复检查；自动检查带执行锁、1.5s 合并与 35s 总时限",
-    "自动检查异常/超时/端点全失败均写完整调试轨迹并复位状态机；同一时刻只允许一个更新弹窗，锁滞留 60s 可自愈",
-    "保留三端点并发择优、PackageInfo 超时兜底、手动检查必有可见反馈、下载字节数校验与备用直链自动切换等全部既有加固",
-    "保留自研弹窗/Toast、不跳转官网、不打开浏览器、MD5 校验、安装引导与 App 内更新模块常驻内置"
+    "P0 性能：新增帧耗时探针（addTimingsCallback，慢帧>50ms 告警落盘）与点击事件耗时追踪（TapTracer）",
+    "P0 性能：账号「管理」键与市场「管理」按钮改用防抖+帧解耦封装（DebouncedTap），连点重入保护，回调推迟到下一帧",
+    "P0 性能：debugPrint 同步 I/O 移出点击热路径（改 microtask/仅 debug 模式），锚点布局查询移除，卡片列表加 RepaintBoundary 隔离重绘",
+    "插件市场图标：30+ 插件按功能分配语义化内联 SVG（眼睛/代码块/十字星/喇叭/柱状图等），Lucide 线性风格，彻底移除文字色块",
+    "插件市场预览图：改用真实截图 URL（每插件不同）+ BoxFit.cover，加载中 shimmer 骨架屏渐隐过渡，失败可重试降级且落日志",
+    "修复申请收录插件状态机：开发者/想法两分支改为各自独立表单状态，切换不再串数据；FilePicker/表单/路由均完整可用",
+    "保留：每次进入 App 自动检测更新、三端点择优、App 内更新模块常驻、自研弹窗/Toast、MD5 校验与安装引导"
   ],
-  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.7.2/DeepSeek-Harness-Move-2.7.2-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.7.3/DeepSeek-Harness-Move-2.7.3-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.7.2-arm64.apk",
-    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.7.2/DeepSeek-Harness-Move-2.7.2-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.7.3-arm64.apk",
+    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.7.3/DeepSeek-Harness-Move-2.7.3-arm64.apk"
   ],
-  "md5": "64c17360b5396551c9f35fba65fa60f1",
-  "sha256": "61b0ae557b0245c7212b0e2580b47073c1d9e71842110d4afe5cf241a7cb7492",
+  "md5": "692e71f403e550baff5202b93eca6c87",
+  "sha256": "c4ca24e4ca40f2baf51b4a456d11cad00be8fcae5702ba3b8d1c5d76f7746720",
   "size": 39527159,
   "force": false
 }
