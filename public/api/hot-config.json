@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "updated_at": "2026-11-18T10:00:00+08:00",
+  "system_prompt_append": "\n\n【工作模式输出约束 · 热配置 v1】\n1. 最终回复面向手机屏幕，禁止输出 Markdown 表格；需要对比时用分段列表，每项写成「字段：值」。\n2. 思考过程与最终回答分离：不要在正文复述推理链路，正文只给结论、步骤和必要解释。\n3. 不确定就直说不确定，不编造工具执行结果。\n4. 真机操作失败时，说明失败步骤、已尝试次数和可替代路径。",
+  "work_mode_notice": "工作模式：思考过程收进抽屉，正文不混推理；回复不使用表格。",
+  "feature_flags": {
+    "thinking_drawer": true,
+    "work_mode_no_table": true,
+    "no_account_flow": true
+  }
+}
