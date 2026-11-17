@@ -2,30 +2,27 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "2.8.0",
-  "build": 2800,
+  "version": "2.9.0",
+  "build": 2900,
   "minSdk": 26,
   "date": "2026-11-17",
-  "notes": "底层身份重塑与全链路架构重构：真实权限链、前台保活、CoT 前置、状态机兜底、全链路 Tracing。",
+  "notes": "v2.9.0：聊天外观个性化子系统 + 侧边账号区改造 + 插件能力真实挂载。新增壁纸/遮罩/模糊/字号/气泡配色/聊天样式与信息设置面板；【插件市场】下新增【个性自定义】；插件能力接入截图、控件树、原生悬浮提示三条真实工具；修复身份设置丢名称与恢复默认头像误删名称，外观与身份改加密持久化。",
   "changelog": [
-    "身份认知单一数据源（dsh_identity.dart）：对话与规划器共用同一 charter，注入许可档 / 黑名单 / 能力探针真实状态，杜绝「无权限」自限幻觉",
-    "权限真实化：移除「工作区目录恒 true」假权限，改为真实检测「所有文件访问权限」；通知权限 Android 13+ 走系统运行时申请；无障碍检测精确匹配组件扁平名",
-    "前台保活升级：新增 BootReceiver + RECEIVE_BOOT_COMPLETED，仅恢复用户显式开启过的保活；Alarm 落盘清单，重启后重建；无障碍 serviceInfo 显式回写",
-    "文件沙盒穿透：公共存储绝对路径（/sdcard、/storage/emulated/0）纳入工作区白名单，真实 I/O 由系统权限裁决，失败如实报错",
-    "全局安全拦截后台可见：新增原生仅告知型 Overlay（confirmNotice），风控拦截 / 后台文件确认在 App 退到后台时依然可见，不再静默失败",
-    "CoT 前置与动作流修复：真实 reasoning 到达时隐藏伪思考动画；执行前播报意图 / 拆解 / 权限 / 风险四项真实依据；Observation 拼接真实画面校验；修复长任务折叠失效 BUG",
-    "状态机超时兜底：Agent 页面裸调用套 TaskGuard（20min）+ onAbort；AgentChannel 关键 MethodChannel 调用统一 30s 超时并落盘 tracing",
-    "UI 高保真：通用弹窗真实高斯模糊 + 0.3→1.0 弹性放大 + 快速下甩关闭；账号面板锚点生效；补齐 6 家厂商 SVG；评论头像去首字；插件申请离线提交如实告知",
-    "全链路 Tracing：冷启动环境快照（平台/SDK/机型/会话号）、异常栈落盘；自动更新检查失败不再完全静默（6h 节流 Toast）",
-    "保留：每次进入 App 自动检测更新、三端点择优、App 内更新模块常驻、MD5 校验与安装引导"
+    "聊天外观个性化：壁纸、遮罩 0–100、高斯模糊 0–25px、字号 12–24sp、5 套气泡配色、4 种聊天样式；枚举联动约束，拖动实时预览，保存才持久化，取消回滚",
+    "侧边账号区【管理】改为【信息设置】：修改我方 / AI 名称、头像拍照 / 相册 / 恢复默认，保存后聊天列表局部差分刷新",
+    "【插件市场】下方新增【个性自定义】：外观与背景主面板 + 气泡配色 / 聊天样式二级面板，自研弹窗动效与安全区适配",
+    "插件能力真实挂载：plugin_screen_capture / plugin_read_ui_nodes / plugin_overlay_notice 三条真实工具，插件开关实时增删；无原生支撑的能力标记 unsupported",
+    "修复 ChatProfileStore.save 只写传入字段导致改名 / 改头像互相覆盖，resetAvatar 误删名称",
+    "外观与身份迁移到 EncryptedSharedPreferences（SecureStore），持久化 Key 保持 chat_appearance.v1 / chat_profile.v1",
+    "静态分析 0 issue；arm64 APK 39,659,403 B，证书与 v2.8.0 相同，可覆盖升级"
   ],
-  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.8.0/DeepSeek-Harness-Move-2.8.0-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.9.0/DeepSeek-Harness-Move-2.9.0-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.8.0-arm64.apk",
-    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.8.0/DeepSeek-Harness-Move-2.8.0-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.9.0-arm64.apk",
+    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.9.0/DeepSeek-Harness-Move-2.9.0-arm64.apk"
   ],
-  "md5": "f79edc60bcede54a5c0f56fc2863df40",
-  "sha256": "ad508d5590f7b015cfd5d8dee355809218b6b3dea6b09fc62665aa3e58cea208",
-  "size": 39658519,
+  "md5": "1df1a5b28bf7548204a12f885106fd43",
+  "sha256": "a38fc93c014ac918a126188ac7cc6b642d6b950837f92baff41b54403b775ef3",
+  "size": 39659403,
   "force": false
 }
