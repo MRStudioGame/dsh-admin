@@ -2,27 +2,27 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "2.7.3",
-  "build": 2703,
+  "version": "2.7.4",
+  "build": 2704,
   "minSdk": 26,
   "date": "2026-11-16",
-  "notes": "全局 UI 性能攻坚（帧/点击耗时告警、管理键防抖+帧解耦）+ 插件市场高保真重构（语义化 SVG 图标、真实截图+骨架屏）+ 申请插件状态机修复。",
+  "notes": "插件创建业务流闭环重构：动态 Title + 双选项 BottomSheet + 开发者/想法独立完整表单页。",
   "changelog": [
-    "P0 性能：新增帧耗时探针（addTimingsCallback，慢帧>50ms 告警落盘）与点击事件耗时追踪（TapTracer）",
-    "P0 性能：账号「管理」键与市场「管理」按钮改用防抖+帧解耦封装（DebouncedTap），连点重入保护，回调推迟到下一帧",
-    "P0 性能：debugPrint 同步 I/O 移出点击热路径（改 microtask/仅 debug 模式），锚点布局查询移除，卡片列表加 RepaintBoundary 隔离重绘",
-    "插件市场图标：30+ 插件按功能分配语义化内联 SVG（眼睛/代码块/十字星/喇叭/柱状图等），Lucide 线性风格，彻底移除文字色块",
-    "插件市场预览图：改用真实截图 URL（每插件不同）+ BoxFit.cover，加载中 shimmer 骨架屏渐隐过渡，失败可重试降级且落日志",
-    "修复申请收录插件状态机：开发者/想法两分支改为各自独立表单状态，切换不再串数据；FilePicker/表单/路由均完整可用",
+    "修复路由 Title 复用：AppBar 标题随 _node/_createMode 动态计算，四个节点分别显示「申请收录插件/复刻电脑版插件/创建新插件/分享插件想法」",
+    "消除死按钮/空壳页：点击「选择创建方式」必弹出双选项 BottomSheet（A 我是开发者，精通编程 / B 我不会编程，就是分享想法），点击立即关闭弹窗并渲染对应表单",
+    "开发者分支：宿主编程规范只读面板（语言栈/沙箱隔离/API 配额/生命周期）+ 插件名称 + 技术备注 + 代码包上传 + 截图 + 提交审核",
+    "想法分享分支：插件名称（必填校验）+ 功能描述（多行）+ 相册/文件管理器媒体选择 + 提交审核",
+    "返回键按节点层级回退（表单→选择方式→根节点），不再直接退出；所有节点切换写 DebugLog.state 状态日志",
+    "表单页与文件选择器均经 DebouncedTap 帧解耦，点击回调推迟到下一帧执行，不阻塞 UI 主线程",
     "保留：每次进入 App 自动检测更新、三端点择优、App 内更新模块常驻、自研弹窗/Toast、MD5 校验与安装引导"
   ],
-  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.7.3/DeepSeek-Harness-Move-2.7.3-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.7.4/DeepSeek-Harness-Move-2.7.4-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.7.3-arm64.apk",
-    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.7.3/DeepSeek-Harness-Move-2.7.3-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.7.4-arm64.apk",
+    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.7.4/DeepSeek-Harness-Move-2.7.4-arm64.apk"
   ],
-  "md5": "692e71f403e550baff5202b93eca6c87",
-  "sha256": "c4ca24e4ca40f2baf51b4a456d11cad00be8fcae5702ba3b8d1c5d76f7746720",
-  "size": 39527159,
+  "md5": "621ede8b54f40d486a0d25b474b12055",
+  "sha256": "5d57812baf57da17ee200ed65d03942df60597c6df150868d8149127c0cea950",
+  "size": 39527267,
   "force": false
 }
