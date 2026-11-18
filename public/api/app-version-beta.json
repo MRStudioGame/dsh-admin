@@ -2,23 +2,25 @@
   "app": "DSH-Move",
   "package": "com.dshmove.app",
   "channel": "beta",
-  "version": "2.10.3",
-  "build": 21003,
+  "version": "2.10.4",
+  "build": 21004,
   "minSdk": 26,
   "date": "2026-11-18",
-  "sameAsStable": true,
-  "notes": "管理员测试通道已开通。当前测试包与正式版同为 v2.10.3，用于先验证管理员下载与安装链路；下一次更新会先发布到这里，管理员确认后再推正式官网。",
+  "sameAsStable": false,
+  "notes": "管理员测试版 v2.10.4：首启模式页命中区加固、个性自定义入口加固、插件卡片点击、插件截图/评论去假数据。正式官网仍为 v2.10.3，确认后再提升。",
   "changelog": [
-    "管理员测试通道上线：先下载、先试装、确认后再发布正式站",
-    "测试包下载优先使用 ghfast 高速镜像，备用 GitHub Release 直链，速度与官网下载一致",
-    "测试包不进入正式官网下载区，普通用户不可见"
+    "首启模式页改为 opaque 命中，增加 25 秒看门狗，点不动可自动恢复",
+    "个性自定义入口改到抽屉退场后 320ms 再拉面板；设置页新增直达入口",
+    "插件卡片主体可点击，打开插件预览",
+    "移除 picsum 随机截图与硬编码评论，改为诚实空态",
+    "静态分析 No issues found；证书与 v2.10.3 一致，可覆盖安装"
   ],
-  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.3/DeepSeek-Harness-Move-2.10.3-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.4-beta.1/DSH-Move-2.10.4-arm64.apk",
   "apkFallbackUrls": [
-    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.3/DeepSeek-Harness-Move-2.10.3-arm64.apk"
+    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.4-beta.1/DSH-Move-2.10.4-arm64.apk"
   ],
-  "md5": "daf0bb5f0cc9a9ee10f0ff955f810cb6",
-  "sha256": "ea4bff888884f9aaa2373e1fcff4910269594c15d2b3ebb9d76b8c62e88ee15a",
-  "size": 39724403,
+  "md5": "85f05d84b8300bdcd0b2bea194429de6",
+  "sha256": "3c06e2c78b7136c1517c34ab98be00cc021af7f015cf54c19240dcf6fea58acb",
+  "size": 39658871,
   "force": false
 }
