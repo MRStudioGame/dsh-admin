@@ -20,8 +20,8 @@
   ],
   "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.2/DeepSeek-Harness-Move-2.10.2-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.10.2-arm64.apk",
-    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.2/DeepSeek-Harness-Move-2.10.2-arm64.apk"
+    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.2/DeepSeek-Harness-Move-2.10.2-arm64.apk",
+    "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.2/DeepSeek-Harness-Move-2.10.2-arm64.apk"
   ],
   "md5": "1d5017cb539308349f0732622075d9fa",
   "sha256": "3afff0144b57c2be0899112a14545c57d9e37698c47f4e205240a01dd0c07213",
