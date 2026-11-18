@@ -60,7 +60,8 @@ async function onLogin() {
           登 录
         </el-button>
       </el-form>
-      <div class="beta-entry"><a href="beta.html" target="_blank">下载测试版</a><span>仅管理员测试通道</span></div>`n      <div class="login-hint">
+      <div class="beta-entry"><a href="beta.html" target="_blank">下载测试版</a><span>仅管理员测试通道</span></div>
+      <div class="login-hint">
         演示账号：admin / operator / viewer（密码均为 201301）
       </div>
     </div>
@@ -119,7 +120,11 @@ async function onLogin() {
   margin-top: 6px;
 }
 
-.beta-entry { margin-top: 16px; padding-top: 14px; border-top: 1px solid #eef0f4; display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12px; }`n.beta-entry a { color: #2f54eb; font-weight: 700; text-decoration: none; }`n.beta-entry span { color: #98a2b3; }`n`n.login-hint {
+.beta-entry { margin-top: 16px; padding-top: 14px; border-top: 1px solid #eef0f4; display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12px; }
+.beta-entry a { color: #2f54eb; font-weight: 700; text-decoration: none; }
+.beta-entry span { color: #98a2b3; }
+
+.login-hint {
   margin-top: 20px;
   font-size: 12px;
   color: var(--c-text-3);
