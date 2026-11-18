@@ -61,6 +61,7 @@ async function onLogin() {
         </el-button>
       </el-form>
       <div class="beta-entry"><a href="beta.html" target="_blank">下载测试版</a><span>仅管理员测试通道</span></div>
+      <div class="beta-entry"><a href="points.html" target="_blank">积分模块</a><span>预留界面，待接后端</span></div>
       <div class="login-hint">
         演示账号：admin / operator / viewer（密码均为 201301）
       </div>
