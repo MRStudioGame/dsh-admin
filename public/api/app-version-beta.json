@@ -2,25 +2,26 @@
   "app": "DSH-Move",
   "package": "com.dshmove.app",
   "channel": "beta",
-  "version": "2.10.4",
-  "build": 21004,
+  "version": "2.11.0",
+  "build": 21100,
   "minSdk": 26,
   "date": "2026-11-18",
   "sameAsStable": false,
-  "notes": "管理员测试版 v2.10.4：首启模式页命中区加固、个性自定义入口加固、插件卡片点击、插件截图/评论去假数据。正式官网仍为 v2.10.3，确认后再提升。",
+  "notes": "管理员测试版 v2.11.0：积分账户、积分充值占位、Hy 4/WorkBuddy 模型与【免费】说明、真实 token 扣费与流水、后台积分模块预留。正式官网仍为 v2.10.3。",
   "changelog": [
-    "首启模式页改为 opaque 命中，增加 25 秒看门狗，点不动可自动恢复",
-    "个性自定义入口改到抽屉退场后 320ms 再拉面板；设置页新增直达入口",
-    "插件卡片主体可点击，打开插件预览",
-    "移除 picsum 随机截图与硬编码评论，改为诚实空态",
+    "本地积分 user_points、侧边余额与积分充值占位入口",
+    "Hy 4 / Hy 4 flash 模型家族，【免费】标识可点击说明",
+    "调用前预估 token 校验，成功后按 usage 扣积分，失败不扣",
+    "积分流水 points_ledger + DebugLog，消息底部消耗提示",
+    "后台积分查询/补发预留页，未接后端不写余额",
     "静态分析 No issues found；证书与 v2.10.3 一致，可覆盖安装"
   ],
-  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.4-beta.1/DSH-Move-2.10.4-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.11.0-beta.1/DSH-Move-2.11.0-arm64.apk",
   "apkFallbackUrls": [
-    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.4-beta.1/DSH-Move-2.10.4-arm64.apk"
+    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.11.0-beta.1/DSH-Move-2.11.0-arm64.apk"
   ],
-  "md5": "85f05d84b8300bdcd0b2bea194429de6",
-  "sha256": "3c06e2c78b7136c1517c34ab98be00cc021af7f015cf54c19240dcf6fea58acb",
-  "size": 39658871,
+  "md5": "62e54dbad29664cefd516d7befe10ece",
+  "sha256": "d29d570b07c8378484022013650635fe1e2bdaa8d76da86cc399856f5a260394",
+  "size": 39724491,
   "force": false
 }
