@@ -1,30 +1,28 @@
 {
-  "app": "DeepSeek Harness Move",
+  "app": "DSH-Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "2.10.2",
-  "build": 21002,
+  "version": "2.10.3",
+  "build": 21003,
   "minSdk": 26,
   "date": "2026-11-18",
-  "notes": "v2.10.2 检查更新升级：启动/回前台/关于页手动检查统一先热配置再版本清单；三源并发取最高版本，修复手动检查降级误判；下载后大小+MD5+可选SHA-256校验，应用内申请安装未知应用权限并返回自动续装；修复首启模式页点不动。",
+  "notes": "v2.10.3：模型家族二级展开 + 4 档思考滑块接入模型面板；个性自定义壁纸持久化；移除 BottomSheet/Dialog 全屏高斯模糊；品牌统一为 DSH-Move；关于页官网与 GitHub Issues 反馈可点击。",
   "changelog": [
-    "检查更新升级：冷启动、回前台、关于页手动检查统一先拉 hot-config，再比对 app-version.json",
-    "热配置有更高版本立即应用，无需装包；手动检查明确显示热配置状态",
-    "管理端 Pages / jsDelivr / GitHub Raw 三源并发，取版本号与构建号最高的一份",
-    "修复手动检查降级误判：仅版本号更高，或同版本构建号更高，才算新版本",
-    "下载后核对文件大小 + MD5，清单含 SHA-256 时追加校验，坏包自动切换下一通道",
-    "未授权安装未知应用时跳系统权限页，返回 App 自动继续安装；已授权直接拉起系统安装器",
-    "更新面板在场时根层自动检查跳过，避免权限页返回后叠加第二个更新弹窗",
-    "首启模式页改为 Material + InkWell 命中；模式切换/引导写入/权限探针增加超时与异常复位",
-    "静态分析 0 issue；arm64 APK 39,658,899 B，证书与 v2.10.1 相同，可覆盖升级"
+    "模型面板改为模型家族二级展开，子模型真实写入 session.model 与请求体 model",
+    "4 档思考滑块接入模型面板；极高档粒子仅选中时运行；仅 DeepSeek 下发 reasoning_effort",
+    "个性自定义壁纸后台 isolate 压缩并写入私有目录，修复重启丢失",
+    "移除 BottomSheet / Dialog 全屏 BackdropFilter，只保留半透明遮罩",
+    "品牌名统一为 DSH-Move，首启页增加官方版权行",
+    "关于页官网与 GitHub Issues 官方反馈可点击打开",
+    "静态分析 No issues found；arm64 APK 39,724,403 B，证书与 v2.10.2 相同"
   ],
-  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.2/DeepSeek-Harness-Move-2.10.2-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.3/DeepSeek-Harness-Move-2.10.3-arm64.apk",
   "apkFallbackUrls": [
     "https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.2/DeepSeek-Harness-Move-2.10.2-arm64.apk",
-    "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.2/DeepSeek-Harness-Move-2.10.2-arm64.apk"
+    "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.3/DeepSeek-Harness-Move-2.10.3-arm64.apk"
   ],
-  "md5": "1d5017cb539308349f0732622075d9fa",
-  "sha256": "3afff0144b57c2be0899112a14545c57d9e37698c47f4e205240a01dd0c07213",
-  "size": 39658899,
+  "md5": "daf0bb5f0cc9a9ee10f0ff955f810cb6",
+  "sha256": "ea4bff888884f9aaa2373e1fcff4910269594c15d2b3ebb9d76b8c62e88ee15a",
+  "size": 39724403,
   "force": false
 }
