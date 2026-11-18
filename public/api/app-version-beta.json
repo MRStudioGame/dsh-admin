@@ -20,8 +20,8 @@
   "apkFallbackUrls": [
     "https://github.com/MRStudioGame/dsh-move/releases/download/v2.11.0-beta.1/DSH-Move-2.11.0-arm64.apk"
   ],
-  "md5": "62e54dbad29664cefd516d7befe10ece",
-  "sha256": "d29d570b07c8378484022013650635fe1e2bdaa8d76da86cc399856f5a260394",
+  "md5": "755e1a44f8296afdbbe020559632d508",
+  "sha256": "a4eef6c36e8c90ebb2726d996d1575fedea0befaa410e70c41855951bfa40c85",
   "size": 39724491,
   "force": false
 }
