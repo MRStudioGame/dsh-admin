@@ -1,0 +1,24 @@
+{
+  "app": "DSH-Move",
+  "package": "com.dshmove.app",
+  "channel": "beta",
+  "version": "2.10.3",
+  "build": 21003,
+  "minSdk": 26,
+  "date": "2026-11-18",
+  "sameAsStable": true,
+  "notes": "管理员测试通道已开通。当前测试包与正式版同为 v2.10.3，用于先验证管理员下载与安装链路；下一次更新会先发布到这里，管理员确认后再推正式官网。",
+  "changelog": [
+    "管理员测试通道上线：先下载、先试装、确认后再发布正式站",
+    "测试包下载优先使用 ghfast 高速镜像，备用 GitHub Release 直链，速度与官网下载一致",
+    "测试包不进入正式官网下载区，普通用户不可见"
+  ],
+  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.3/DeepSeek-Harness-Move-2.10.3-arm64.apk",
+  "apkFallbackUrls": [
+    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.3/DeepSeek-Harness-Move-2.10.3-arm64.apk"
+  ],
+  "md5": "daf0bb5f0cc9a9ee10f0ff955f810cb6",
+  "sha256": "ea4bff888884f9aaa2373e1fcff4910269594c15d2b3ebb9d76b8c62e88ee15a",
+  "size": 39724403,
+  "force": false
+}
