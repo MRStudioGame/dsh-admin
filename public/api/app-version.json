@@ -2,28 +2,29 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "2.10.1",
-  "build": 21001,
+  "version": "2.10.2",
+  "build": 21002,
   "minSdk": 26,
   "date": "2026-11-18",
-  "notes": "v2.10.1 紧急 P0：修复点击个性自定义/工作模式后整页全屏模糊卡死，移除页面级双层高斯模糊、权限探针改异步并加 5 秒超时；外观面板异常自动回滚；创建插件一级入口直接进入创建方式，开发者/想法表单完整闭环，接口失败明确提示重试。",
+  "notes": "v2.10.2 检查更新升级：启动/回前台/关于页手动检查统一先热配置再版本清单；三源并发取最高版本，修复手动检查降级误判；下载后大小+MD5+可选SHA-256校验，应用内申请安装未知应用权限并返回自动续装；修复首启模式页点不动。",
   "changelog": [
-    "紧急 P0：修复点击个性自定义 / 工作模式后整页全屏模糊卡死，移除聊天页整页 ImageFiltered + AnimatedScale 双层模糊",
-    "弹窗/面板只保留自身遮罩模糊，12px 降至 8px，避免低端机双全屏滤镜卡死",
-    "模式切换先同步更新内存态与 UI，SharedPreferences 落盘和权限探针全部异步",
-    "AgentChannel status / hasOverlay 增加 5 秒超时，权限探针重负载转后台，异常有结构化日志与轻提示",
-    "外观面板 context 校验 + try/catch/finally，异常回滚编辑态并提示重试",
-    "创建插件一级入口直接唤起创建方式面板，删除中间空壳页；开发者/想法表单返回一级并清空分支态",
-    "插件申请接口失败明确提示“提交失败，请稍后重试”，表单保留作为重试入口，不伪造远端成功",
-    "静态分析 0 issue；arm64 APK 39,658,779 B，SHA-256 ed16b0df…82d3f，证书与 v2.10.0 相同，可覆盖升级"
+    "检查更新升级：冷启动、回前台、关于页手动检查统一先拉 hot-config，再比对 app-version.json",
+    "热配置有更高版本立即应用，无需装包；手动检查明确显示热配置状态",
+    "管理端 Pages / jsDelivr / GitHub Raw 三源并发，取版本号与构建号最高的一份",
+    "修复手动检查降级误判：仅版本号更高，或同版本构建号更高，才算新版本",
+    "下载后核对文件大小 + MD5，清单含 SHA-256 时追加校验，坏包自动切换下一通道",
+    "未授权安装未知应用时跳系统权限页，返回 App 自动继续安装；已授权直接拉起系统安装器",
+    "更新面板在场时根层自动检查跳过，避免权限页返回后叠加第二个更新弹窗",
+    "首启模式页改为 Material + InkWell 命中；模式切换/引导写入/权限探针增加超时与异常复位",
+    "静态分析 0 issue；arm64 APK 39,658,899 B，证书与 v2.10.1 相同，可覆盖升级"
   ],
-  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.1/DeepSeek-Harness-Move-2.10.1-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.2/DeepSeek-Harness-Move-2.10.2-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.10.1-arm64.apk",
-    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.1/DeepSeek-Harness-Move-2.10.1-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.10.2-arm64.apk",
+    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.2/DeepSeek-Harness-Move-2.10.2-arm64.apk"
   ],
-  "md5": "d084bda2083f7c98b4947a367876c17f",
-  "sha256": "ed16b0df0eba07fb2b65445d6942c26c71b1ba4120966db0efa8d347f4882d3f",
-  "size": 39658779,
+  "md5": "1d5017cb539308349f0732622075d9fa",
+  "sha256": "3afff0144b57c2be0899112a14545c57d9e37698c47f4e205240a01dd0c07213",
+  "size": 39658899,
   "force": false
 }
