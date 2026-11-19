@@ -17,9 +17,7 @@
   ],
   "apkUrl": "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.14.5-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.14.5-arm64.apk",
-    "https://cdn.jsdelivr.net/gh/MRStudioGame/dsh-move@main/dl/DeepSeek-Harness-Move-2.14.5-arm64.apk",
-    "https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.14.5-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.14.5-arm64.apk"
   ],
   "md5": "3ea3e3c9db2d6d4a0dcb1d769cae8cb9",
   "sha256": "a66b9a90ad754cf2105f971a44a1f06414bc47c422c55a6949d5f4367ef37193",
