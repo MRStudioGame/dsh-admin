@@ -2,23 +2,27 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "2.15.0",
-  "build": 21500,
+  "version": "2.15.3",
+  "build": 21503,
   "minSdk": 26,
-  "date": "2026-11-19",
-  "notes": "v2.15.0：会话级设备控制权、自然语言结果、假成功修复、英文指令识别；App 内下载优先走已校验镜像，官方 Pages 直连兜底。",
+  "date": "2026-11-20",
+  "notes": "v2.15.3：侧边栏四组折叠与会话区渐隐、积分签到/消耗流水/均衡模型扣费展示、工作模式双语复合指令与 MIUI 首启确认自动放行；App 内下载优先走已校验镜像，官方 Pages 直连兜底。",
   "changelog": [
-    "会话级设备控制权：后续「继续/下一步/next」仍由本机执行器接管，不再掉回模型",
-    "任务结果改为自然语言，正文不含任何表格",
-    "未识别指令不再截屏报成功，改为明确提示没理解",
-    "app-only 内置更新链路保持不变，版本号 2.15.0 (21500)"
+    "侧边栏改为四组折叠：插件生态、资源与自定义、积分、账号与系统，默认收起且一次只展开一组",
+    "归档会话移入会话列表右上角「⋯ 更多」；Agent 自动任务常驻",
+    "会话列表增加底部渐隐，避免展开菜单时最后一条标题/时间被硬裁",
+    "新增积分签到：每日 5000 分，自然日 0 点刷新，已签到置灰并写流水",
+    "新增积分消耗记录：倒序展示时间、摘要、会话、模型、扣分与累计消耗",
+    "均衡模型回复下方显示「本次消耗：xx 积分」，实际扣减与流水三处一致",
+    "工作模式补齐英文/复合指令解析，并自动放行 MIUI 首次启动应用确认框",
+    "版本号 2.15.3 (21503)"
   ],
-  "apkUrl": "https://gh-proxy.com/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.15.0-arm64.apk",
+  "apkUrl": "https://gh-proxy.com/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.15.3-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.15.0-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.15.3-arm64.apk"
   ],
-  "md5": "95c0a9bd08b1acc0b3646533e26c1726",
-  "sha256": "92196ecf658ec07aefbb2ae99db4875f3cc2dda56eb78456725297b86b5940cf",
-  "size": 44891945,
+  "md5": "dceaf67ca219b8a33e00a04d482ddd90",
+  "sha256": "8911461f8e9d08d1398e90b757f1a6e1ee3cc8f9b201953cc8370b3975f6d87f",
+  "size": 44958265,
   "force": false
 }
