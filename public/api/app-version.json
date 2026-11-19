@@ -6,14 +6,14 @@
   "build": 21500,
   "minSdk": 26,
   "date": "2026-11-19",
-  "notes": "v2.15.0：会话级设备控制权、自然语言结果、假成功修复、英文指令识别。",
+  "notes": "v2.15.0：会话级设备控制权、自然语言结果、假成功修复、英文指令识别；App 内下载优先走已校验镜像，官方 Pages 直连兜底。",
   "changelog": [
     "会话级设备控制权：后续「继续/下一步/next」仍由本机执行器接管，不再掉回模型",
     "任务结果改为自然语言，正文不含任何表格",
     "未识别指令不再截屏报成功，改为明确提示没理解",
     "app-only 内置更新链路保持不变，版本号 2.15.0 (21500)"
   ],
-  "apkUrl": "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.15.0-arm64.apk",
+  "apkUrl": "https://gh-proxy.com/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.15.0-arm64.apk",
   "apkFallbackUrls": [
     "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.15.0-arm64.apk"
   ],
