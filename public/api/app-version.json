@@ -1,28 +1,27 @@
 {
-  "app": "DSH-Move",
+  "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "2.10.3",
-  "build": 21003,
+  "version": "2.14.3",
+  "build": 21403,
   "minSdk": 26,
-  "date": "2026-11-18",
-  "notes": "v2.10.3：模型家族二级展开 + 4 档思考滑块接入模型面板；个性自定义壁纸持久化；移除 BottomSheet/Dialog 全屏高斯模糊；品牌统一为 DSH-Move；关于页官网与 GitHub Issues 反馈可点击。",
+  "date": "2026-11-19",
+  "notes": "更新模块专项修复：线上版本清单低于本机时，手动检查不再误报「已是最新」，改为明确提示「当前版本高于线上清单」，并说明发布通道可能未同步或仍在缓存；自动检查与 App 内下载/校验/安装链路完成回归验证。",
   "changelog": [
-    "模型面板改为模型家族二级展开，子模型真实写入 session.model 与请求体 model",
-    "4 档思考滑块接入模型面板；极高档粒子仅选中时运行；仅 DeepSeek 下发 reasoning_effort",
-    "个性自定义壁纸后台 isolate 压缩并写入私有目录，修复重启丢失",
-    "移除 BottomSheet / Dialog 全屏 BackdropFilter，只保留半透明遮罩",
-    "品牌名统一为 DSH-Move，首启页增加官方版权行",
-    "关于页官网与 GitHub Issues 官方反馈可点击打开",
-    "静态分析 No issues found；arm64 APK 39,724,403 B，证书与 v2.10.2 相同"
+    "手动检查结论修复：线上清单版本低于本机版本时，单独提示「当前版本高于线上清单」，展示本机与线上版本/构建号，说明发布通道可能尚未同步或仍在缓存旧清单，不再用「已是最新」掩盖发布滞后",
+    "保留冷启动自动检查与后台回前台自动检查，35 秒总时限、弹窗 60 秒自愈锁、失败 6 小时节流提示均复测正常",
+    "版本来源仍为管理端三端点并发择优（Pages / jsDelivr / raw），取版本号与构建号最高的一份，避免 CDN 旧缓存",
+    "App 内下载链路回归：多直链轮换、HTTP Range 断点续传、服务端忽略 Range 时截断重下、字节数核对、MD5 与可选 SHA-256 校验、暂停/继续/取消、安装未知应用权限引导",
+    "关于页手动检查：点击反馈、正在检查态、结论弹窗、40 秒超时兜底与 finally 复位均逐项真机验证",
+    "版本号 2.14.3 (21403)"
   ],
-  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.3/DeepSeek-Harness-Move-2.10.3-arm64.apk",
+  "apkUrl": "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.14.3-arm64.apk",
   "apkFallbackUrls": [
-    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.2/DeepSeek-Harness-Move-2.10.2-arm64.apk",
-    "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.10.3/DeepSeek-Harness-Move-2.10.3-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.14.3-arm64.apk",
+    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.14.3/DeepSeek-Harness-Move-2.14.3-arm64.apk"
   ],
-  "md5": "daf0bb5f0cc9a9ee10f0ff955f810cb6",
-  "sha256": "ea4bff888884f9aaa2373e1fcff4910269594c15d2b3ebb9d76b8c62e88ee15a",
-  "size": 39724403,
+  "md5": "014450b9910c088d7f2b0dba96bf9090",
+  "sha256": "4b2dd757a4110028839cb8c027a40d722e6f346318841b74eeecf036aa36386a",
+  "size": 44891949,
   "force": false
 }
