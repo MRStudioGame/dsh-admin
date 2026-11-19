@@ -2,25 +2,23 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "2.14.5",
-  "build": 21405,
+  "version": "2.15.0",
+  "build": 21500,
   "minSdk": 26,
   "date": "2026-11-19",
-  "notes": "更新模块重试链路修复：移除包住交互弹窗的外层总时限，等待用户点「重新拉取」的时间不再计入 35/40 秒；断网检查约 10 秒返回「更新资源获取失败」，连续重试不再叠加「检查超时」。",
+  "notes": "v2.15.0：会话级设备控制权、自然语言结果、假成功修复、英文指令识别。",
   "changelog": [
-    "移除包住整个手动检查流程的外层总时限（原 35s，关于页 40s）：弹窗等待用户操作的时间不再计入超时，避免用户稍慢或重试一次就叠加出「检查超时」",
-    "每一步请求各自限时：版本清单 10s、热配置 6s、本机版本读取 3s，交互等待不计时，保证【重新拉取】始终可用",
-    "断网手动检查约 10 秒返回「更新资源获取失败，请稍后重试」，连续两次重新拉取均正常返回，不再弹出超时",
-    "保留线上清单低于本机时的「当前版本高于线上清单」提示，不再误报「已是最新」",
-    "自动检查（冷启动 + 后台回前台）、弹窗 60 秒自愈锁、失败 6 小时节流复测正常",
-    "版本号 2.14.5 (21405)"
+    "会话级设备控制权：后续「继续/下一步/next」仍由本机执行器接管，不再掉回模型",
+    "任务结果改为自然语言，正文不含任何表格",
+    "未识别指令不再截屏报成功，改为明确提示没理解",
+    "app-only 内置更新链路保持不变，版本号 2.15.0 (21500)"
   ],
-  "apkUrl": "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.14.5-arm64.apk",
+  "apkUrl": "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.15.0-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.14.5-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.15.0-arm64.apk"
   ],
-  "md5": "3ea3e3c9db2d6d4a0dcb1d769cae8cb9",
-  "sha256": "a66b9a90ad754cf2105f971a44a1f06414bc47c422c55a6949d5f4367ef37193",
-  "size": 44891949,
+  "md5": "95c0a9bd08b1acc0b3646533e26c1726",
+  "sha256": "92196ecf658ec07aefbb2ae99db4875f3cc2dda56eb78456725297b86b5940cf",
+  "size": 44891945,
   "force": false
 }
