@@ -29,6 +29,7 @@ export interface UserAccount {
   createdAt: string
   lastLoginAt: string
   taskCount: number
+  points: number
   clientVersion: string
   ipRegion: string
 }

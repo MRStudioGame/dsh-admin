@@ -14,6 +14,7 @@ export const roleMenus: Record<RoleCode, string[]> = {
 export type PermCode =
   | 'user:freeze'
   | 'user:reset'
+  | 'user:points'
   | 'user:batch'
   | 'user:export'
   | 'device:unbind'
@@ -26,8 +27,8 @@ export type PermCode =
   | 'plugin:apply'
 
 const rolePerms: Record<RoleCode, PermCode[]> = {
-  super: ['user:freeze', 'user:reset', 'user:batch', 'user:export', 'device:unbind', 'task:export', 'online:kick', 'config:edit', 'alert:read', 'release:publish', 'plugin:manage', 'plugin:apply'],
-  operator: ['user:freeze', 'user:reset', 'user:batch', 'user:export', 'device:unbind', 'task:export', 'online:kick', 'alert:read', 'plugin:manage', 'plugin:apply'],
+  super: ['user:freeze', 'user:reset', 'user:points', 'user:batch', 'user:export', 'device:unbind', 'task:export', 'online:kick', 'config:edit', 'alert:read', 'release:publish', 'plugin:manage', 'plugin:apply'],
+  operator: ['user:freeze', 'user:reset', 'user:points', 'user:batch', 'user:export', 'device:unbind', 'task:export', 'online:kick', 'alert:read', 'plugin:manage', 'plugin:apply'],
   viewer: ['user:export', 'task:export', 'alert:read'],
 }
 

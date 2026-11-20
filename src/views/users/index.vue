@@ -58,6 +58,27 @@ async function resetPassword(row: UserAccount) {
   ElMessageBox.alert(`新密码：${r.newPassword}`, '密码已重置', { confirmButtonText: '知道了' })
 }
 
+async function adjustPoints(row: UserAccount) {
+  const input = await ElMessageBox.prompt(
+    `当前积分：${row.points ?? 0}\n输入调整后的积分（0 起，整数），或输入 +100 / -50 增减。`,
+    `调整「${row.username}」的积分`,
+    {
+      inputValue: String(row.points ?? 0),
+      inputPattern: /^[+-]?\d+$/,
+      inputErrorMessage: '请输入整数，如 100、+100、-50',
+      confirmButtonText: '保存',
+      cancelButtonText: '取消',
+    },
+  )
+  const raw = String(input.value).trim()
+  const next = raw.startsWith('+') || raw.startsWith('-')
+    ? Number(row.points ?? 0) + Number(raw)
+    : Number(raw)
+  const r = await api.setUserPoints(row.id, next)
+  ElMessage.success(`已调整为 ${r.points} 积分`)
+  load()
+}
+
 async function batchFreeze() {
   if (!selection.value.length) {
     ElMessage.warning('请先勾选账号')
@@ -71,15 +92,15 @@ async function batchFreeze() {
 
 function exportCsvFile() {
   exportCsv(
-    ['账号', 'DeviceId', '状态', '注册时间', '最后登录', '任务数', '版本', 'IP 属地'],
-    list.value.map((u) => [u.username, u.deviceId, u.status === 'active' ? '正常' : '冻结', u.createdAt, u.lastLoginAt, u.taskCount, u.clientVersion, u.ipRegion]),
+    ['账号', 'DeviceId', '状态', '积分', '注册时间', '最后登录', '任务数', '版本', 'IP 属地'],
+    list.value.map((u) => [u.username, u.deviceId, u.status === 'active' ? '正常' : '冻结', u.points ?? 0, u.createdAt, u.lastLoginAt, u.taskCount, u.clientVersion, u.ipRegion]),
     'users',
   )
 }
 
 function detail(row: UserAccount) {
   ElMessageBox.alert(
-    `账号：${row.username}\n设备：${row.deviceShort}\n状态：${row.status === 'active' ? '正常' : '冻结'}\n注册：${row.createdAt}\n最后登录：${row.lastLoginAt}\n任务数：${row.taskCount}\n版本：${row.clientVersion}\nIP 属地：${row.ipRegion}`,
+    `账号：${row.username}\n设备：${row.deviceShort}\n状态：${row.status === 'active' ? '正常' : '冻结'}\n积分：${row.points ?? 0}\n注册：${row.createdAt}\n最后登录：${row.lastLoginAt}\n任务数：${row.taskCount}\n版本：${row.clientVersion}\nIP 属地：${row.ipRegion}`,
     '账号详情',
     { confirmButtonText: '关闭' },
   )
@@ -122,11 +143,17 @@ onMounted(load)
         <el-table-column prop="createdAt" label="注册时间" width="160" sortable />
         <el-table-column prop="lastLoginAt" label="最后登录" width="160" />
         <el-table-column prop="taskCount" label="任务数" width="90" sortable />
+        <el-table-column prop="points" label="积分" width="100" sortable>
+          <template #default="{ row }">
+            <span class="points-cell">{{ row.points ?? 0 }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="clientVersion" label="版本" width="80" />
         <el-table-column prop="ipRegion" label="IP 属地" width="110" />
-        <el-table-column label="操作" width="210" fixed="right">
+        <el-table-column label="操作" width="270" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" size="small" @click="detail(row)">详情</el-button>
+            <el-button v-perm="'user:points'" link type="success" size="small" @click="adjustPoints(row)">积分</el-button>
             <el-button v-perm="'user:freeze'" link :type="row.status === 'active' ? 'danger' : 'success'" size="small" @click="toggleFreeze(row)">
               {{ row.status === 'active' ? '冻结' : '解封' }}
             </el-button>

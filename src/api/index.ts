@@ -42,6 +42,7 @@ export interface Api {
   users(query: Record<string, unknown>): Promise<PageResult<UserAccount>>
   freezeUser(id: string, freeze: boolean): Promise<boolean>
   resetPassword(id: string): Promise<{ newPassword: string }>
+  setUserPoints(id: string, points: number): Promise<{ points: number }>
   batchFreeze(ids: string[], freeze: boolean): Promise<boolean>
   devices(query: Record<string, unknown>): Promise<PageResult<DeviceBinding>>
   unbindDevice(deviceId: string): Promise<boolean>
@@ -89,6 +90,7 @@ const realImpl: Api = {
   users: (q) => http.get('/users', { params: q }),
   freezeUser: (id, freeze) => http.post(`/users/${id}/freeze`, { freeze }),
   resetPassword: (id) => http.post(`/users/${id}/reset-password`),
+  setUserPoints: (id, points) => http.put(`/users/${id}/points`, { points }),
   batchFreeze: (ids, freeze) => http.post('/users/batch-freeze', { ids, freeze }),
   devices: (q) => http.get('/devices', { params: q }),
   unbindDevice: (deviceId) => http.post(`/devices/${deviceId}/unbind`),

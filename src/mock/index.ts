@@ -80,7 +80,7 @@ const admins: AdminUser[] = [
 let currentAdmin: AdminUser = admins[0]
 
 // ─────────── 业务数据：空库起步（机器人账号已全部清除）───────────
-let users: UserAccount[] = loadRows<UserAccount>('users')
+let users: UserAccount[] = loadRows<UserAccount>('users').map((u) => ({ ...u, points: Number(u.points) || 0 }))
 let devices: DeviceBinding[] = loadRows<DeviceBinding>('devices')
 let tasks: TaskLog[] = loadRows<TaskLog>('tasks')
 let audits: AuditLog[] = loadRows<AuditLog>('audits')
@@ -288,6 +288,18 @@ export const mockApi = {
     await sleep(300)
     audit('重置密码', id, '密码已重置为初始密码')
     return { newPassword: '1234' }
+  },
+
+  async setUserPoints(id: string, points: number) {
+    await sleep(300)
+    const u = users.find((x) => x.id === id)
+    if (!u) throw new Error('用户不存在')
+    const next = Math.max(0, Math.round(Number(points) || 0))
+    const before = u.points || 0
+    u.points = next
+    saveRows('users', users)
+    audit('调整积分', u.username, `${before} → ${next}`)
+    return { points: next }
   },
 
   async batchFreeze(ids: string[], freeze: boolean) {
