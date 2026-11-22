@@ -14,13 +14,14 @@
   "notes": "v2.21.1：兑换码输入框不再展示任何真实兑换码示例；其余与 2.21.0 相同（插件单封面、首页三键预写模板、积分分组兑换码兑换、计费口径回退、移除「1 积分 = 1 Token」表述）。",
   "package": "com.dshmove.app",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.21.1-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.21.1-arm64.apk",
+    "https://gh-proxy.com/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.21.1-arm64.apk"
   ],
   "size": 51306193,
   "build": 22101,
   "md5": "20590204b6d29eab8682506dec9d236c",
   "force": false,
   "minSdk": 26,
-  "apkUrl": "https://gh-proxy.com/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.21.1-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.21.1-arm64.apk",
   "app": "DeepSeek Harness Move"
 }
