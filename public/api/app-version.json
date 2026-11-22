@@ -2,29 +2,25 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "2.22.0",
-  "build": 22200,
+  "version": "2.24.0",
+  "build": 22400,
   "minSdk": 26,
   "date": "2026-11-22",
-  "notes": "v2.22.0：积分充值入口正式开放——四张档位商品卡可左右滑动切换，卡片带边缘流光与推荐粒子，点击弹出跳转确认后到 kufaka 购买页下单，拿到兑换码回到 App 用「兑换码兑换」自动识别档位发放积分；一码一用。",
+  "notes": "v2.24.0：工作模式补齐「思考中 / 思考过程」折叠抽屉（执行中显示思考中与已执行步数，结束后可展开看每步真实动作、成败、尝试次数、耗时、校验依据）；新增技能库，跑顺过的任务可一键存为技能、下次点名字直接回填运行，长按删除。",
   "changelog": [
-    "积分充值：侧边栏「积分充值」由占位提示改为真实页面（/points/buy）",
-    "商品卡：四档（10 万 / 100 万 / 300 万 / 1000 万）横向滑动切换，带页码指示",
-    "视觉效果：卡片边缘流光沿边框循环跑动，推荐档额外有上浮粒子",
-    "购买流程：点击卡片 → 「确认购买」弹窗（说明第三方站付款、回来用码兑换）→ 外部浏览器打开对应 kufaka 商品页",
-    "兜底：浏览器打不开或跳转失败时自动复制商品链接并提示手动访问",
-    "兑换闭环：购买页底部「已有兑换码？去兑换」直达兑换页；兑换按内置码表自动识别档位、一码一用",
-    "文案：模型详情页「积分充值功能正在开发中」改为引导到积分充值/兑换码兑换",
-    "价格说明：仅 10 万档在清单里明确了 ¥3.99，其余三档显示「价格见购买页」，不编造价格",
-    "版本号 2.22.0 (22200)"
+    "工作模式：新增思考抽屉，执行中标题「思考中」，结束后「思考过程」",
+    "抽屉内容为真实步骤记录：动作 / 成功失败 / 第几次尝试 / 耗时 / 归属目标 / 校验依据",
+    "新增技能库：把当前任务存为技能（自动取名，同名覆盖，最多 20 条）",
+    "技能一键回填输入框并累计使用次数；长按删除；无技能时不占版面",
+    "版本号 2.24.0 (22400)"
   ],
-  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.22.0-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.24.0-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.22.0-arm64.apk",
-    "https://gh-proxy.com/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.22.0-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.24.0-arm64.apk",
+    "https://gh-proxy.com/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.24.0-arm64.apk"
   ],
-  "md5": "51a115aff0202771558b68b5b327cf47",
-  "sha256": "7c8aa8f77a3cf29fcc66bc04ccc7148848246fcd07c169621fb3150962ea8da4",
-  "size": 51371729,
+  "md5": "0e9cfd20fa175db79630f91d4bd0aba1",
+  "sha256": "bedba90439e1b5f5c67ec1cf70f1cb2b12bac227a4d953a6f4b9d81172a306c9",
+  "size": 51371885,
   "force": false
 }
