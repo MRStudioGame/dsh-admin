@@ -2,28 +2,29 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "2.31.0",
-  "build": 23100,
+  "version": "2.32.0",
+  "build": 23200,
   "minSdk": 26,
   "date": "2026-11-22",
-  "notes": "v2.31.0：修注册真凶——注册撞「设备已绑定」时，二级确认弹窗拿不到 Navigator 直接抛 Null check 异常，脚本层表现为「点了注册毫无反应」。现已三级兜底并加键盘回车提交。",
+  "notes": "v2.32.0：注册彻底修通（真机端到端已验证）。设备绑定冲突不再另开二级弹窗，改为同一张卡片内一行红色确认，点一下就注销旧账号并注册新账号，从根本上断开那条会抛 Null check 异常的链路。",
   "changelog": [
-    "注册崩溃根因：deviceBound 二级弹窗 showAppDialog 用 Navigator.of(context) 在上下文失效时抛 Null check 异常，异常被异步吞掉，界面看起来就是点击无响应；改为 maybeOf + 根 Navigator 兜底",
-    "抽屉底部身份区可点：未登录显示「未登录 · 点此注册 / 登录」，右侧蓝底「注册/登录」直接拉起账号弹窗，不再只有「信息设置」",
-    "登录态真实显示：抽屉底部按 AuthStore 实时刷新（未登录/已登录·账号名），不再写死「本地身份 · 无账号登录」",
-    "报错不再残留：任一输入框改动即清掉上一条红字（此前改正密码后红字仍挂着，像一直注册失败）",
-    "键盘上点「完成」即可提交注册/登录",
-    "无障碍提示改正：写明「每次覆盖安装新版本，系统会自动关掉，需要再开一次」",
-    "脏绑定自愈保留：本机绑定指向的账号已不存在时自动清绑定，不会永久卡在「你已有一个账号了！」",
-    "版本号 2.31.0 (23100)"
+    "注册主链路实机验证通过：提交 → 检测到本机已绑定旧账号（nnn）→ 卡片内直接给出「注销「nnn」并注册新账号」→ 点一下完成注销重建 → 抽屉底部变为「已登录 · 新账号」，积分原样保留",
+    "设备绑定冲突改为同卡片内联确认：不再调用 showBoundAccountDialog 二级弹窗，彻底移除 Navigator 上下文失效导致点击无响应的崩溃面",
+    "冲突提示写清原因：这台设备已绑定过账号 X，一个设备只能绑一个，需要先注销",
+    "任一输入框改动即清掉旧的冲突态与红字，避免改正后仍停在旧提示",
+    "抽屉底部身份区可点：未登录显示「未登录 · 点此注册 / 登录」，右侧蓝底「注册/登录」直接拉起账号弹窗",
+    "登录态实时刷新：底部按 AuthStore 显示已登录账号名，按钮自动切回「信息设置」",
+    "键盘点「完成」可直接提交",
+    "无障碍提示改正：每次覆盖安装新版本系统都会关掉，需要再开一次（旧文案「之后无需重复」是错的）",
+    "版本号 2.32.0 (23200)"
   ],
-  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.31.0-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.32.0-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.31.0-arm64.apk",
-    "https://gh-proxy.com/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.31.0-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.32.0-arm64.apk",
+    "https://gh-proxy.com/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.32.0-arm64.apk"
   ],
-  "md5": "8b2238de820c8abf3ba995b3c1a3b955",
-  "sha256": "4cb01c6c41b9d8a901a48118f42b5557c5eb3d37bbeee494fcaba145d242ef49",
+  "md5": "7e2f52913cb70862afdab80ec0d62ca3",
+  "sha256": "c53048cc445fd79353451ded610401d77aaf660ba25548fbc7b510ae755b10a6",
   "size": 51371885,
   "force": false
 }
