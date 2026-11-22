@@ -2,25 +2,24 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "2.26.0",
-  "build": 22600,
+  "version": "2.27.0",
+  "build": 22700,
   "minSdk": 26,
   "date": "2026-11-22",
-  "notes": "v2.26.0：工作模式支持执行中插话——任务跑到一半可以直接补一句新要求，不用急停重来；模型下一步规划会把它当最高优先级指令并调整计划。",
+  "notes": "v2.27.0：修注册。脏绑定（绑定表记着账号名但账号本体已没）自动清理，不再卡死在「你已有一个账号了！」；频控与设备号异常给出能定位的明确提示。",
   "changelog": [
-    "执行中插话：工作模式执行时出现「插话」输入框，回车或点按钮即发出，不打断当前动作",
-    "插话生效点：下一步规划时以「用户插话（优先级最高）」整段拼到该轮提示词里，也会写进思考抽屉与执行日志",
-    "插话排队：连续多条插话按顺序合并下发，不会互相覆盖",
-    "无执行会话时点插话给明确提示，不再静默失败",
-    "版本号 2.26.0 (22600)"
+    "脏绑定自愈：注册前发现「本机绑定的账号已经不存在」，自动清掉这条悬空绑定，注册流程继续，不再永久被拦",
+    "设备号读不到：错误从「服务暂时不可用」改成「读不到本机设备标识，请重启 App 后再试」，不再误导排查方向",
+    "频控提示说清规则：同一台设备 1 分钟内最多提交 3 次注册/登录，提示写明等待时长",
+    "版本号 2.27.0 (22700)"
   ],
-  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.26.0-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.27.0-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.26.0-arm64.apk",
-    "https://gh-proxy.com/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.26.0-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.27.0-arm64.apk",
+    "https://gh-proxy.com/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.27.0-arm64.apk"
   ],
-  "md5": "d46d2f89e5f64e462db1f7e349c4cd5b",
-  "sha256": "a2cbf00df9dbadfbdb9fa689bae8c1301a7c5ba6a34b251fa6e24809dc8366ff",
+  "md5": "8ed2941680518ea75688b76bc59bf851",
+  "sha256": "bd45f1fcf809c822419d17d648961b70830ad0902cb457ba4914377fccdc0128",
   "size": 51371885,
   "force": false
 }
