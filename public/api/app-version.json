@@ -2,24 +2,28 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "2.27.0",
-  "build": 22700,
+  "version": "2.31.0",
+  "build": 23100,
   "minSdk": 26,
   "date": "2026-11-22",
-  "notes": "v2.27.0：修注册。脏绑定（绑定表记着账号名但账号本体已没）自动清理，不再卡死在「你已有一个账号了！」；频控与设备号异常给出能定位的明确提示。",
+  "notes": "v2.31.0：修注册真凶——注册撞「设备已绑定」时，二级确认弹窗拿不到 Navigator 直接抛 Null check 异常，脚本层表现为「点了注册毫无反应」。现已三级兜底并加键盘回车提交。",
   "changelog": [
-    "脏绑定自愈：注册前发现「本机绑定的账号已经不存在」，自动清掉这条悬空绑定，注册流程继续，不再永久被拦",
-    "设备号读不到：错误从「服务暂时不可用」改成「读不到本机设备标识，请重启 App 后再试」，不再误导排查方向",
-    "频控提示说清规则：同一台设备 1 分钟内最多提交 3 次注册/登录，提示写明等待时长",
-    "版本号 2.27.0 (22700)"
+    "注册崩溃根因：deviceBound 二级弹窗 showAppDialog 用 Navigator.of(context) 在上下文失效时抛 Null check 异常，异常被异步吞掉，界面看起来就是点击无响应；改为 maybeOf + 根 Navigator 兜底",
+    "抽屉底部身份区可点：未登录显示「未登录 · 点此注册 / 登录」，右侧蓝底「注册/登录」直接拉起账号弹窗，不再只有「信息设置」",
+    "登录态真实显示：抽屉底部按 AuthStore 实时刷新（未登录/已登录·账号名），不再写死「本地身份 · 无账号登录」",
+    "报错不再残留：任一输入框改动即清掉上一条红字（此前改正密码后红字仍挂着，像一直注册失败）",
+    "键盘上点「完成」即可提交注册/登录",
+    "无障碍提示改正：写明「每次覆盖安装新版本，系统会自动关掉，需要再开一次」",
+    "脏绑定自愈保留：本机绑定指向的账号已不存在时自动清绑定，不会永久卡在「你已有一个账号了！」",
+    "版本号 2.31.0 (23100)"
   ],
-  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.27.0-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.31.0-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.27.0-arm64.apk",
-    "https://gh-proxy.com/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.27.0-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.31.0-arm64.apk",
+    "https://gh-proxy.com/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.31.0-arm64.apk"
   ],
-  "md5": "8ed2941680518ea75688b76bc59bf851",
-  "sha256": "bd45f1fcf809c822419d17d648961b70830ad0902cb457ba4914377fccdc0128",
+  "md5": "8b2238de820c8abf3ba995b3c1a3b955",
+  "sha256": "4cb01c6c41b9d8a901a48118f42b5557c5eb3d37bbeee494fcaba145d242ef49",
   "size": 51371885,
   "force": false
 }
