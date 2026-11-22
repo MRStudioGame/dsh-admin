@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DSH-Move 管理员测试通道</title>
+<style>
+  :root {
+    --brand: #2f54eb;
+    --brand-2: #1d39c4;
+    --ink: #141a24;
+    --sub: #667085;
+    --line: #e6e8ee;
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --ok: #12b76a;
+    --warn: #f79009;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(900px 420px at 15% -10%, rgba(47,84,235,.18), transparent 60%),
+      radial-gradient(700px 380px at 100% 0%, rgba(18,183,106,.12), transparent 55%),
+      var(--bg);
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 34px 18px 56px; }
+  .top {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 26px;
+    text-decoration: none; color: inherit;
+  }
+  .mark {
+    width: 46px; height: 46px; border-radius: 12px;
+    display: grid; place-items: center;
+    background: linear-gradient(145deg, var(--brand), var(--brand-2));
+    color: #fff; font-weight: 800; font-size: 17px; letter-spacing: -.5px;
+    box-shadow: 0 8px 22px rgba(47,84,235,.32);
+  }
+  .top-title { font-size: 20px; font-weight: 800; letter-spacing: -.2px; }
+  .top-sub { font-size: 12px; color: var(--sub); margin-top: 3px; }
+  .badge {
+    margin-left: auto; padding: 6px 10px; border-radius: 999px;
+    background: rgba(247,144,9,.12); color: #b54708;
+    font-size: 12px; font-weight: 700;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 24px; box-shadow: 0 18px 50px rgba(16,24,40,.07);
+  }
+  .eyebrow { color: var(--sub); font-size: 12px; letter-spacing: .4px; text-transform: uppercase; }
+  .version {
+    display: flex; align-items: baseline; gap: 10px; margin: 6px 0 18px;
+    font-size: 34px; font-weight: 800; letter-spacing: -.8px;
+  }
+  .build { font-size: 13px; color: var(--sub); font-weight: 600; }
+  .meta {
+    display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px;
+    margin-bottom: 18px;
+  }
+  .meta-item {
+    background: #f8f9fc; border: 1px solid var(--line); border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .meta-k { font-size: 11px; color: var(--sub); margin-bottom: 4px; }
+  .meta-v { font-size: 13px; font-weight: 700; overflow-wrap: anywhere; }
+  .notes-title { font-size: 13px; font-weight: 800; margin: 4px 0 8px; }
+  .notes { margin: 0; padding-left: 18px; color: #344054; font-size: 13px; line-height: 1.9; }
+  .actions { display: grid; gap: 10px; margin-top: 22px; }
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 50px; border-radius: 12px; text-decoration: none;
+    font-size: 15px; font-weight: 800; border: 1px solid transparent;
+  }
+  .btn-primary {
+    background: linear-gradient(145deg, var(--brand), var(--brand-2));
+    color: #fff; box-shadow: 0 10px 24px rgba(47,84,235,.28);
+  }
+  .btn-ghost { background: #fff; color: var(--ink); border-color: var(--line); }
+  .hint {
+    display: flex; gap: 8px; margin-top: 18px; padding: 12px 14px;
+    border-radius: 10px; background: rgba(247,144,9,.09);
+    color: #93370d; font-size: 12.5px; line-height: 1.75;
+  }
+  .foot {
+    margin-top: 18px; color: var(--sub); font-size: 12px; line-height: 1.8;
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+  .foot a { color: var(--brand); text-decoration: none; font-weight: 700; }
+  .state {
+    margin-top: 16px; padding: 14px; border-radius: 10px;
+    background: #f8f9fc; border: 1px dashed var(--line);
+    font-size: 13px; color: var(--sub);
+  }
+  .err { color: #b42318; }
+  @media (max-width: 520px) {
+    .wrap { padding: 22px 14px 44px; }
+    .card { padding: 18px; border-radius: 16px; }
+    .version { font-size: 28px; }
+    .meta { grid-template-columns: 1fr; }
+    .badge { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="top" href="./">
+    <span class="mark">DSH</span>
+    <div>
+      <div class="top-title">DSH-Move 管理员测试通道</div>
+      <div class="top-sub">仅管理员可见 · 正式官网不展示测试包</div>
+    </div>
+    <span class="badge">BETA</span>
+  </a>
+
+  <main class="card">
+    <div class="eyebrow">当前测试版本</div>
+    <div class="version">
+      <span id="ver">—</span>
+      <span class="build" id="build"></span>
+    </div>
+
+    <div class="meta">
+      <div class="meta-item"><div class="meta-k">发布时间</div><div class="meta-v" id="date">—</div></div>
+      <div class="meta-item"><div class="meta-k">安装包大小</div><div class="meta-v" id="size">—</div></div>
+      <div class="meta-item"><div class="meta-k">MD5</div><div class="meta-v" id="md5">—</div></div>
+      <div class="meta-item"><div class="meta-k">SHA-256</div><div class="meta-v" id="sha">—</div></div>
+    </div>
+
+    <div class="notes-title">本次测试内容</div>
+    <ul class="notes" id="notes"><li>正在读取测试版本清单…</li></ul>
+
+    <div class="actions">
+      <a class="btn btn-primary" id="fast" href="#" rel="noopener">高速下载测试版 APK</a>
+      <a class="btn btn-ghost" id="fallback" href="#" rel="noopener">GitHub 直连备用</a>
+    </div>
+
+    <div class="hint">
+      <span>!</span>
+      <div>请先在本机安装并验证，确认无误后再执行正式发布。测试包不进正式官网下载区，不影响普通用户。</div>
+    </div>
+
+    <div class="state" id="state">正在读取 <code>api/app-version-beta.json</code>…</div>
+
+    <div class="foot">
+      <span>DSH-Move © 2026 Official Release</span>
+      <a href="./points.html">积分模块（预留）</a>
+      <a href="./">返回管理后台</a>
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  var el = function (id) { return document.getElementById(id); };
+  function fmtSize(n) {
+    if (!n && n !== 0) return '—';
+    if (n >= 1024 * 1024) return (n / 1024 / 1024).toFixed(1) + ' MB';
+    if (n >= 1024) return (n / 1024).toFixed(0) + ' KB';
+    return n + ' B';
+  }
+  function setState(text, err) {
+    var s = el('state');
+    s.textContent = text;
+    s.className = 'state' + (err ? ' err' : '');
+  }
+  fetch('api/app-version-beta.json?t=' + Date.now(), { cache: 'no-store' })
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (d) {
+      el('ver').textContent = d.version || '—';
+      el('build').textContent = d.build ? 'build ' + d.build : '';
+      el('date').textContent = d.date || '—';
+      el('size').textContent = fmtSize(d.size);
+      el('md5').textContent = d.md5 || '—';
+      el('sha').textContent = d.sha256 || '—';
+      el('notes').innerHTML = '';
+      var list = d.changelog && d.changelog.length ? d.changelog : [d.notes || '暂无说明'];
+      list.forEach(function (x) {
+        var li = document.createElement('li');
+        li.textContent = x;
+        el('notes').appendChild(li);
+      });
+      if (d.apkUrl) {
+        el('fast').href = d.apkUrl;
+        el('fast').setAttribute('download', '');
+      } else {
+        el('fast').style.display = 'none';
+      }
+      var fb = (d.apkFallbackUrls && d.apkFallbackUrls[0]) || d.apkFallback || '';
+      if (fb) {
+        el('fallback').href = fb;
+        el('fallback').setAttribute('download', '');
+      } else {
+        el('fallback').style.display = 'none';
+      }
+      var same = d.sameAsStable ? ' 当前包与正式版同版本，仅用于验证测试下载链路。' : '';
+      setState('测试通道已就绪。' + same);
+    })
+    .catch(function (e) {
+      setState('测试版本清单读取失败：' + e.message + '。请稍后刷新，或检查 Pages 是否已完成构建。', true);
+      el('fast').style.display = 'none';
+      el('fallback').style.display = 'none';
+    });
+})();
+</script>
+</body>
+</html>

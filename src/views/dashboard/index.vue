@@ -30,14 +30,24 @@ const devicePieChart = ref<echarts.ECharts>()
 const funnelChart = ref<echarts.ECharts>()
 const gaugeChart = ref<echarts.ECharts>()
 
+// 图表容器（必须用独立的 ref 名：Vue 3 的模板 ref 不支持 "object.prop" 写法，
+// 之前 chartEls.online 一直是 undefined，导致 echarts.init 直接抛错、图表全空）
+const onlineEl = ref<HTMLElement>()
+const registerEl = ref<HTMLElement>()
+const barEl = ref<HTMLElement>()
+const pieEl = ref<HTMLElement>()
+const devicePieEl = ref<HTMLElement>()
+const funnelEl = ref<HTMLElement>()
+const gaugeEl = ref<HTMLElement>()
+
 const chartEls = {
-  online: ref<HTMLElement>(),
-  register: ref<HTMLElement>(),
-  bar: ref<HTMLElement>(),
-  pie: ref<HTMLElement>(),
-  devicePie: ref<HTMLElement>(),
-  funnel: ref<HTMLElement>(),
-  gauge: ref<HTMLElement>(),
+  online: onlineEl,
+  register: registerEl,
+  bar: barEl,
+  pie: pieEl,
+  devicePie: devicePieEl,
+  funnel: funnelEl,
+  gauge: gaugeEl,
 }
 
 // ── 加载看板 ──
@@ -55,9 +65,17 @@ async function loadDashboard() {
 }
 
 // ── 渲染图表 ──
+let chartTries = 0
+
 function renderCharts() {
   const d = data.value
   if (!d) return
+  // 容器还没挂载（首屏/切页）就稍后重试，避免 echarts.init(undefined) 抛错把整页图表打断
+  if (!chartEls.online.value) {
+    if (chartTries++ < 20) setTimeout(renderCharts, 150)
+    return
+  }
+  chartTries = 0
 
   // 在线人数折线
   if (!onlineChart.value) onlineChart.value = echarts.init(chartEls.online.value!)
@@ -288,49 +306,49 @@ function trendClass(t: number) {
           <span class="panel-title">在线人数趋势</span>
           <el-button link size="small" @click="exportPng(onlineChart, 'online-trend')">导出PNG</el-button>
         </div>
-        <div ref="chartEls.online" class="chart-box" />
+        <div ref="onlineEl" class="chart-box" />
       </div>
       <div class="panel-card">
         <div class="panel-head">
           <span class="panel-title">用户增长趋势</span>
           <el-button link size="small" @click="exportPng(registerChart, 'register-trend')">导出PNG</el-button>
         </div>
-        <div ref="chartEls.register" class="chart-box" />
+        <div ref="registerEl" class="chart-box" />
       </div>
       <div class="panel-card span-2">
         <div class="panel-head">
           <span class="panel-title">日注册量 / 任务量</span>
           <el-button link size="small" @click="exportPng(barChart, 'daily-stats')">导出PNG</el-button>
         </div>
-        <div ref="chartEls.bar" class="chart-box" />
+        <div ref="barEl" class="chart-box" />
       </div>
       <div class="panel-card">
         <div class="panel-head">
           <span class="panel-title">任务类型分布</span>
           <el-button link size="small" @click="exportPng(pieChart, 'task-type')">导出PNG</el-button>
         </div>
-        <div ref="chartEls.pie" class="chart-box" />
+        <div ref="pieEl" class="chart-box" />
       </div>
       <div class="panel-card">
         <div class="panel-head">
           <span class="panel-title">设备占比</span>
           <el-button link size="small" @click="exportPng(devicePieChart, 'device-dist')">导出PNG</el-button>
         </div>
-        <div ref="chartEls.devicePie" class="chart-box" />
+        <div ref="devicePieEl" class="chart-box" />
       </div>
       <div class="panel-card">
         <div class="panel-head">
           <span class="panel-title">注册-登录-发起任务 转化漏斗</span>
           <el-button link size="small" @click="exportPng(funnelChart, 'funnel')">导出PNG</el-button>
         </div>
-        <div ref="chartEls.funnel" class="chart-box" />
+        <div ref="funnelEl" class="chart-box" />
       </div>
       <div class="panel-card">
         <div class="panel-head">
           <span class="panel-title">实时任务并发速率</span>
           <el-button link size="small" @click="exportPng(gaugeChart, 'concurrency')">导出PNG</el-button>
         </div>
-        <div ref="chartEls.gauge" class="chart-box" />
+        <div ref="gaugeEl" class="chart-box" />
       </div>
     </div>
 
@@ -507,4 +525,56 @@ function trendClass(t: number) {
     grid-template-columns: 1fr;
   }
 }
+
+/* 手机端：全部单列，图表压矮，卡片内边距收紧 */
+@media (max-width: 820px), (pointer: coarse) and (max-width: 1000px) {
+  .dashboard {
+    padding: 10px;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .chart-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .bottom-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .span-2 {
+    grid-column: span 1;
+  }
+
+  .kpi-card,
+  .panel-card {
+    padding: 12px;
+  }
+
+  .kpi-value {
+    font-size: 22px;
+  }
+
+  .chart-box {
+    height: 210px;
+  }
+
+  .alert-item {
+    flex-wrap: wrap;
+    gap: 6px;
+    line-height: 1.4;
+  }
+
+  .alert-detail {
+    flex-basis: 100%;
+    white-space: normal;
+  }
+}
 </style>
+

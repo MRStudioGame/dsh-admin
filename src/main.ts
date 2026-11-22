@@ -8,7 +8,11 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
 import router from './router'
 import { permDirective } from './utils/permDirective'
+import { applyDeviceClass } from './utils/device'
 import './styles/index.css'
+
+// 先识别设备再挂载，避免手机端首帧按桌面布局渲染后跳动
+applyDeviceClass()
 
 const app = createApp(App)
 

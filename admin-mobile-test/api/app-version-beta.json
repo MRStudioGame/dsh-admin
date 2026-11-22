@@ -1,0 +1,27 @@
+{
+  "app": "DSH-Move",
+  "package": "com.dshmove.app",
+  "channel": "beta",
+  "version": "2.11.0",
+  "build": 21100,
+  "minSdk": 26,
+  "date": "2026-11-18",
+  "sameAsStable": false,
+  "notes": "管理员测试版 v2.11.0：积分账户、积分充值占位、Hy 4/WorkBuddy 模型与【免费】说明、真实 token 扣费与流水、后台积分模块预留。正式官网仍为 v2.10.3。",
+  "changelog": [
+    "本地积分 user_points、侧边余额与积分充值占位入口",
+    "Hy 4 / Hy 4 flash 模型家族，【免费】标识可点击说明",
+    "调用前预估 token 校验，成功后按 usage 扣积分，失败不扣",
+    "积分流水 points_ledger + DebugLog，消息底部消耗提示",
+    "后台积分查询/补发预留页，未接后端不写余额",
+    "静态分析 No issues found；证书与 v2.10.3 一致，可覆盖安装"
+  ],
+  "apkUrl": "https://ghfast.top/https://github.com/MRStudioGame/dsh-move/releases/download/v2.11.0-beta.1/DSH-Move-2.11.0-arm64.apk",
+  "apkFallbackUrls": [
+    "https://github.com/MRStudioGame/dsh-move/releases/download/v2.11.0-beta.1/DSH-Move-2.11.0-arm64.apk"
+  ],
+  "md5": "755e1a44f8296afdbbe020559632d508",
+  "sha256": "a4eef6c36e8c90ebb2726d996d1575fedea0befaa410e70c41855951bfa40c85",
+  "size": 39724491,
+  "force": false
+}

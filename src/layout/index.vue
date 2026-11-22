@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
+import { deviceKind } from '@/utils/device'
 import {
   Odometer,
   User,
@@ -23,6 +24,9 @@ const router = useRouter()
 const auth = useAuthStore()
 
 const collapsed = ref(false)
+// 手机/平板：侧栏默认收起成抽屉，点汉堡才展开
+const drawerOpen = ref(false)
+const isCompact = computed(() => deviceKind.value !== 'desktop')
 
 const menus = [
   { key: 'dashboard', title: '实时监控看板', icon: Odometer, path: '/dashboard' },
@@ -41,35 +45,53 @@ const visibleMenus = computed(() => menus.filter((m) => auth.canMenu(m.key)))
 
 const activeMenu = computed(() => (route.meta.menu as string) || 'dashboard')
 
+// 路由变化后自动收起抽屉，避免挡住内容
+watch(() => route.fullPath, () => { drawerOpen.value = false })
+
+// 从手机宽度拉宽到桌面时，清掉抽屉遮罩状态
+watch(deviceKind, (v) => { if (v === 'desktop') drawerOpen.value = false })
+
 function onLogout() {
   auth.logout()
   router.push('/login')
 }
+
+function onMenuSelect() {
+  if (isCompact.value) drawerOpen.value = false
+}
+
+onMounted(() => document.body.classList.toggle('is-compact', isCompact.value))
+watch(isCompact, (v) => document.body.classList.toggle('is-compact', v))
+onBeforeUnmount(() => document.body.classList.remove('is-compact'))
 </script>
 
 <template>
-  <div class="layout">
-    <!-- 侧边导航栏 -->
-    <aside class="sidebar" :class="{ collapsed }">
+  <div class="layout" :class="{ compact: isCompact }">
+    <!-- 手机端抽屉遮罩 -->
+    <div v-if="isCompact && drawerOpen" class="drawer-mask" @click="drawerOpen = false" />
+
+    <!-- 侧边导航栏：桌面固定，手机端浮层抽屉 -->
+    <aside class="sidebar" :class="{ collapsed, open: drawerOpen }">
       <div class="logo">
         <span class="logo-mark">D</span>
-        <span v-if="!collapsed" class="logo-text">DSH Move</span>
+        <span v-if="!collapsed || isCompact" class="logo-text">DSH Move</span>
       </div>
       <el-menu
         :default-active="activeMenu"
-        :collapse="collapsed"
+        :collapse="collapsed && !isCompact"
         router
         background-color="transparent"
         text-color="#c7cbd4"
         active-text-color="#ffffff"
         class="menu"
+        @select="onMenuSelect"
       >
         <el-menu-item v-for="m in visibleMenus" :key="m.key" :index="m.path">
           <el-icon><component :is="m.icon" /></el-icon>
           <template #title>{{ m.title }}</template>
         </el-menu-item>
       </el-menu>
-      <div class="sidebar-footer">
+      <div v-if="!isCompact" class="sidebar-footer">
         <el-button text class="collapse-btn" @click="collapsed = !collapsed">
           <el-icon><Expand v-if="collapsed" /><Fold v-else /></el-icon>
         </el-button>
@@ -79,13 +101,18 @@ function onLogout() {
     <!-- 主内容区 -->
     <div class="main">
       <header class="header">
-        <div class="header-title">{{ route.meta.title }}</div>
+        <div class="header-left">
+          <el-button v-if="isCompact" text class="hamburger" aria-label="展开菜单" @click="drawerOpen = !drawerOpen">
+            <span class="burger" :class="{ x: drawerOpen }"><i /><i /><i /></span>
+          </el-button>
+          <div class="header-title">{{ route.meta.title }}</div>
+        </div>
         <div class="header-right">
-          <el-tag size="small" effect="plain">{{ auth.roleName }}</el-tag>
+          <el-tag v-if="!isCompact" size="small" effect="plain">{{ auth.roleName }}</el-tag>
           <el-dropdown @command="onLogout">
             <span class="admin-name">
               <el-icon><User /></el-icon>
-              {{ auth.nickname }}
+              <span class="admin-nick">{{ auth.nickname }}</span>
               <el-icon><ArrowDown /></el-icon>
             </span>
             <template #dropdown>
@@ -218,5 +245,122 @@ function onLogout() {
   flex: 1;
   overflow: auto;
   background: var(--c-bg);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ===== 手机 / 平板自适应 ===== */
+.drawer-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 20, 28, 0.5);
+  z-index: 999;
+  animation: fadeIn 0.18s ease;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.hamburger {
+  padding: 0 6px;
+  color: var(--c-text);
+}
+
+/* 自绘汉堡图标：三横线，展开时变成 X */
+.burger {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 20px;
+  height: 20px;
+}
+
+.burger i {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--c-text);
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.burger.x i:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.burger.x i:nth-child(2) {
+  opacity: 0;
+}
+
+.burger.x i:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+.layout.compact .sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 248px;
+  max-width: 78vw;
+  z-index: 1000;
+  transform: translateX(-100%);
+  transition: transform 0.22s ease;
+  box-shadow: 6px 0 24px rgba(0, 0, 0, 0.28);
+  padding-top: env(safe-area-inset-top);
+}
+
+.layout.compact .sidebar.open {
+  transform: translateX(0);
+}
+
+.layout.compact .main {
+  width: 100%;
+}
+
+.layout.compact .header {
+  height: 52px;
+  padding: 0 8px 0 10px;
+  padding-top: env(safe-area-inset-top);
+  height: calc(52px + env(safe-area-inset-top));
+}
+
+.layout.compact .header-title {
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.layout.compact .header-right {
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.layout.compact .admin-nick {
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.layout.compact .admin-name {
+  font-size: 13px;
+  gap: 4px;
+}
+
+.layout.compact .content {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 </style>

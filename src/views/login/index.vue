@@ -131,4 +131,28 @@ async function onLogin() {
   color: var(--c-text-3);
   text-align: center;
 }
+
+/* 手机端：卡片不固定 380px，改成视口宽度 */
+@media (max-width: 820px), (pointer: coarse) and (max-width: 1200px) {
+  .login-page {
+    height: 100dvh;
+    padding: 16px;
+    align-items: center;
+  }
+
+  .login-card {
+    width: min(380px, 100%);
+    padding: 24px 18px;
+    border-radius: 14px;
+  }
+
+  .brand {
+    margin-bottom: 20px;
+  }
+
+  .login-hint {
+    margin-top: 14px;
+    line-height: 1.6;
+  }
+}
 </style>

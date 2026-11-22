@@ -50,6 +50,8 @@ a {
   border: 1px solid var(--c-border);
   box-shadow: var(--shadow-card);
   padding: 16px;
+  /* 栅格子项默认 min-width:auto，内部表格会把卡片顶宽，必须显式归零 */
+  min-width: 0;
 }
 
 .panel-title {
@@ -96,3 +98,305 @@ a {
   border-radius: var(--radius);
   border-color: var(--c-border);
 }
+
+/* =====================================================================
+   手机 / 平板自适应（<html data-device="mobile|tablet">）
+   目标：不写死像素、不横向溢出、触控热区 ≥ 36px
+   ===================================================================== */
+html[data-touch='1'] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html[data-device='mobile'],
+html[data-device='tablet'] {
+  /* 移动端字号基准略放大，避免小字看不清 */
+  font-size: 15px;
+}
+
+html[data-device='mobile'] body,
+html[data-device='tablet'] body {
+  overscroll-behavior-y: contain;
+}
+
+/* 页面留白压缩，把宽度让给内容 */
+html[data-device='mobile'] .page,
+html[data-device='tablet'] .page {
+  padding: 10px;
+}
+
+html[data-device='mobile'] .panel-card,
+html[data-device='tablet'] .panel-card {
+  padding: 12px;
+  border-radius: 10px;
+}
+
+html[data-device='mobile'] .panel-title,
+html[data-device='tablet'] .panel-title {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* 工具条：全部换行、控件可伸缩，避免挤成一条小缝 */
+html[data-device='mobile'] .toolbar,
+html[data-device='tablet'] .toolbar {
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+html[data-device='mobile'] .toolbar .spacer {
+  display: none;
+}
+
+html[data-device='mobile'] .toolbar > .el-input,
+html[data-device='mobile'] .toolbar > .el-select,
+html[data-device='mobile'] .toolbar > .el-date-editor {
+  width: 100% !important;
+  flex: 1 1 100%;
+}
+
+html[data-device='mobile'] .toolbar > .el-button {
+  flex: 1 1 auto;
+}
+
+/* 表格：允许横向滚动 + 小字号 + 更矮的行，操作列不再 fixed（小屏 fixed 会盖住内容） */
+html[data-device='mobile'] .el-table,
+html[data-device='tablet'] .el-table {
+  font-size: 13px;
+}
+
+/* 列宽不再被压扁：内层 table 给最小宽度，交给 wrapper 横向滚动 */
+html[data-device='mobile'] .el-table__header-wrapper table,
+html[data-device='mobile'] .el-table__body-wrapper table {
+  min-width: 720px;
+}
+
+html[data-device='tablet'] .el-table__header-wrapper table,
+html[data-device='tablet'] .el-table__body-wrapper table {
+  min-width: 860px;
+}
+
+html[data-device='mobile'] .el-table th.el-table__cell,
+html[data-device='mobile'] .el-table td.el-table__cell {
+  padding: 6px 0;
+}
+
+html[data-device='mobile'] .el-table .cell {
+  padding-left: 8px;
+  padding-right: 8px;
+  line-height: 1.35;
+  word-break: break-all;
+}
+
+html[data-device='mobile'] .el-table__body-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+html[data-device='mobile'] .el-table__header-wrapper {
+  overflow-x: auto;
+}
+
+html[data-device='mobile'] .el-table__header-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-device='mobile'] .el-table__fixed-right,
+html[data-device='mobile'] .el-table__fixed {
+  display: none !important;
+}
+
+/* Element Plus 2.9 的固定列是 sticky 单元格（不是旧版 fixed 容器），
+   小屏上会浮在其它列上面造成文字重叠，这里改成普通流式列 */
+html[data-device='mobile'] .el-table .el-table-fixed-column--right,
+html[data-device='mobile'] .el-table .el-table-fixed-column--left {
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
+  box-shadow: none !important;
+}
+
+html[data-device='mobile'] .el-table .el-button + .el-button {
+  margin-left: 4px;
+}
+html[data-device='mobile'] .el-table .el-button.is-link {
+  padding: 4px 0;
+  min-height: 28px;
+}
+
+/* 表格里的操作按钮在手机上竖排更易点 */
+html[data-device='mobile'] .el-table__cell .el-button.is-link {
+  display: inline-flex;
+}
+
+/* 分页：居中、可换行、按钮变大 */
+html[data-device='mobile'] .pager,
+html[data-device='tablet'] .pager {
+  justify-content: center;
+  margin-top: 10px;
+}
+
+html[data-device='mobile'] .el-pagination {
+  justify-content: center;
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+html[data-device='mobile'] .el-pagination button,
+html[data-device='mobile'] .el-pagination .el-pager li {
+  min-width: 32px;
+  height: 32px;
+}
+
+/* 对话框：铺满宽度、限高滚动，避免 640px 宽弹窗在 360px 屏上溢出 */
+html[data-device='mobile'] .el-dialog,
+html[data-device='tablet'] .el-dialog {
+  width: 94vw !important;
+  max-width: 94vw;
+  margin-top: 6vh !important;
+  border-radius: 12px;
+}
+
+html[data-device='mobile'] .el-dialog__body {
+  max-height: 66vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 14px;
+}
+
+html[data-device='mobile'] .el-dialog__header {
+  padding: 14px 14px 8px;
+}
+
+html[data-device='mobile'] .el-dialog__title {
+  font-size: 15px;
+}
+
+html[data-device='mobile'] .el-dialog__footer {
+  padding: 10px 14px 14px;
+}
+
+/* 表单：标签改顶部对齐，否则 label-width:180px 会把输入框挤成一条 */
+html[data-device='mobile'] .el-form-item {
+  display: block;
+}
+
+html[data-device='mobile'] .el-form-item__label,
+html[data-device='tablet'] .el-form-item__label {
+  width: auto !important;
+  float: none !important;
+  display: block;
+  text-align: left !important;
+  padding: 0 0 4px 0 !important;
+  line-height: 1.4;
+  font-size: 13px;
+}
+
+html[data-device='mobile'] .el-form-item__content {
+  margin-left: 0 !important;
+  width: 100%;
+}
+
+html[data-device='mobile'] .el-form-item {
+  margin-bottom: 14px;
+}
+
+/* 输入类控件：16px 字号可避免 iOS 聚焦自动放大 */
+html[data-device='mobile'] .el-input__inner,
+html[data-device='mobile'] .el-textarea__inner,
+html[data-device='mobile'] .el-select__selected-item {
+  font-size: 16px;
+}
+
+html[data-device='mobile'] .el-input--large .el-input__inner {
+  height: 44px;
+}
+
+/* 触控热区 */
+html[data-device='mobile'] .el-button {
+  min-height: 36px;
+}
+
+html[data-device='mobile'] .el-button--small {
+  min-height: 32px;
+}
+
+/* 下拉、弹层不超出屏幕 */
+html[data-device='mobile'] .el-popper {
+  max-width: 92vw;
+}
+
+/* 登录页：卡片宽度自适应，去掉 36px 大内边距 */
+html[data-device='mobile'] .login-card,
+html[data-device='tablet'] .login-card {
+  width: min(380px, 92vw);
+  padding: 28px 20px;
+  border-radius: 14px;
+}
+
+/* 消息提示在手机上别贴边 */
+html[data-device='mobile'] .el-message {
+  min-width: 0;
+  max-width: 88vw;
+}
+
+/* 卡片型栅格在手机上一律两列（KPI 区），极窄屏才退成单列 */
+html[data-device='mobile'] .kpi-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px;
+}
+
+@media (max-width: 340px) {
+  html[data-device='mobile'] .kpi-row {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* v2.18 补丁：图表/抽屉/描述列表在窄屏上的兜底 */
+html[data-device='mobile'] .chart,
+html[data-device='mobile'] .chart-box,
+html[data-device='mobile'] .echart {
+  height: 210px !important;
+}
+
+html[data-device='mobile'] .el-drawer {
+  width: 92vw !important;
+  max-width: 92vw;
+}
+
+html[data-device='mobile'] .el-tabs__header {
+  margin-bottom: 10px;
+}
+
+html[data-device='mobile'] .el-descriptions__table {
+  table-layout: fixed;
+}
+
+html[data-device='mobile'] .el-descriptions__cell {
+  word-break: break-all;
+}
+
+/* v2.18.1 补丁：表格给最小宽度，列不再被挤成一字一行；
+   外层 wrapper 横向滚动，固定列已在上面解除 sticky，不会叠加 */
+html[data-device='mobile'] .el-table table,
+html[data-device='tablet'] .el-table table {
+  min-width: 720px;
+}
+
+html[data-device='tablet'] .el-table table {
+  min-width: 860px;
+}
+
+html[data-device='mobile'] .el-table .el-table__header-wrapper,
+html[data-device='mobile'] .el-table .el-table__body-wrapper,
+html[data-device='tablet'] .el-table .el-table__header-wrapper,
+html[data-device='tablet'] .el-table .el-table__body-wrapper {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 表格内文字不再逐字换行 */
+html[data-device='mobile'] .el-table .cell {
+  white-space: nowrap;
+}
+
+

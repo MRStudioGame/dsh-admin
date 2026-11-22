@@ -1,0 +1,2 @@
+function i(e,n){const o=e.getDataURL({type:"png",pixelRatio:2,backgroundColor:"#fff"}),t=document.createElement("a");t.href=o,t.download=`${n}.png`,t.click()}function u(e,n,o){const t=a=>{const r=String(a);return/[",\n]/.test(r)?`"${r.replace(/"/g,'""')}"`:r},l="\uFEFF"+[e.map(t).join(","),...n.map(a=>a.map(t).join(","))].join(`
+`),p=new Blob([l],{type:"text/csv;charset=utf-8"}),s=URL.createObjectURL(p),c=document.createElement("a");c.href=s,c.download=`${o}.csv`,c.click(),URL.revokeObjectURL(s)}export{u as a,i as e};
