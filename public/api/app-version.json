@@ -1,27 +1,30 @@
 {
-  "sha256": "140609f78c477668f83e236a0ae1416145119478f3a61d432bf171043aecd060",
-  "version": "2.21.1",
-  "date": "2026-11-22",
-  "channel": "stable",
-  "changelog": [
-    "兑换码页：去掉「例如 7SKG2R9T4BQ6V8PZ」提示，改为「输入兑换码」占位，避免把真实码暴露在界面上",
-    "兑换码：输入自动转大写比对，一码一用（本机记录），按内置商品表自动识别档位发放",
-    "插件封面：单封面（原第二张海报）",
-    "首页三键：代码/文件/插件写入模板并聚焦，不自动发送",
-    "计费口径：回退为上游 usage 优先",
-    "版本号 2.21.1 (22101)"
-  ],
-  "notes": "v2.21.1：兑换码输入框不再展示任何真实兑换码示例；其余与 2.21.0 相同（插件单封面、首页三键预写模板、积分分组兑换码兑换、计费口径回退、移除「1 积分 = 1 Token」表述）。",
+  "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
-  "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.21.1-arm64.apk",
-    "https://gh-proxy.com/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.21.1-arm64.apk"
-  ],
-  "size": 51306193,
-  "build": 22101,
-  "md5": "20590204b6d29eab8682506dec9d236c",
-  "force": false,
+  "channel": "stable",
+  "version": "2.22.0",
+  "build": 22200,
   "minSdk": 26,
-  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.21.1-arm64.apk",
-  "app": "DeepSeek Harness Move"
+  "date": "2026-11-22",
+  "notes": "v2.22.0：积分充值入口正式开放——四张档位商品卡可左右滑动切换，卡片带边缘流光与推荐粒子，点击弹出跳转确认后到 kufaka 购买页下单，拿到兑换码回到 App 用「兑换码兑换」自动识别档位发放积分；一码一用。",
+  "changelog": [
+    "积分充值：侧边栏「积分充值」由占位提示改为真实页面（/points/buy）",
+    "商品卡：四档（10 万 / 100 万 / 300 万 / 1000 万）横向滑动切换，带页码指示",
+    "视觉效果：卡片边缘流光沿边框循环跑动，推荐档额外有上浮粒子",
+    "购买流程：点击卡片 → 「确认购买」弹窗（说明第三方站付款、回来用码兑换）→ 外部浏览器打开对应 kufaka 商品页",
+    "兜底：浏览器打不开或跳转失败时自动复制商品链接并提示手动访问",
+    "兑换闭环：购买页底部「已有兑换码？去兑换」直达兑换页；兑换按内置码表自动识别档位、一码一用",
+    "文案：模型详情页「积分充值功能正在开发中」改为引导到积分充值/兑换码兑换",
+    "价格说明：仅 10 万档在清单里明确了 ¥3.99，其余三档显示「价格见购买页」，不编造价格",
+    "版本号 2.22.0 (22200)"
+  ],
+  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.22.0-arm64.apk",
+  "apkFallbackUrls": [
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-2.22.0-arm64.apk",
+    "https://gh-proxy.com/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-2.22.0-arm64.apk"
+  ],
+  "md5": "51a115aff0202771558b68b5b327cf47",
+  "sha256": "7c8aa8f77a3cf29fcc66bc04ccc7148848246fcd07c169621fb3150962ea8da4",
+  "size": 51371729,
+  "force": false
 }
