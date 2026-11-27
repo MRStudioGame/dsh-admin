@@ -2,28 +2,28 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "3.2.0",
-  "build": 32000,
+  "version": "3.3.0",
+  "build": 33000,
   "minSdk": 26,
   "date": "2026-11-27",
-  "notes": "v3.2.0：真机任务每一步按真实 token 扣积分，余额不足先弹「去充值 / 换模型」；全局图标改为 Material，移除 flutter_svg；权限门禁只认无障碍与悬浮窗，不再因为缺少麦克风/定时任务提示权限不完整；弹窗出入场与缩放大幅瘦身，不再卡顿；个性自定义新增四套主题：默认 / 微信主题 / 青春色彩 / 初恋感觉。",
+  "notes": "v3.3.0：自备模型不再被积分拦截；默认进工作模式并记住上次选择；权限页不再卡顿；厂商图标回到原厂 SVG，「均衡」固定圆圈打勾；积分充值新增「每日签到领10万积分」七日手动领取权益；对话与工作模式里的网址标蓝可点、AI 可起中文短名；同时开启 R8 与 Dart 混淆加固。",
   "changelog": [
-    "修复真机任务免费：UiBrain 每步按预估余额前置校验、成功后按真实 usage 扣费，Agent 自动任务与聊天工作模式都受同一闸门约束",
-    "积分不足弹窗：标题「积分不够，任务发不出去」，给取消 / 切换模型 / 去充值三条路径，不再静默跑完再扣成负数",
-    "图标去 SVG：思考卡、计划卡、品牌标、权限条、插件图标统一 Material 字体图标；删除 plugin_svg_icons.dart 与 flutter_svg 依赖，仓库内不再有 SvgPicture",
-    "权限提示改实话：任务前真实探测无障碍与悬浮窗，门禁只认这两项；通知、保活、文件、麦克风、定时任务降为可选增强，横幅不再误报「权限不完整」",
-    "弹窗不卡：进出场 380→200ms、220→150ms，卡片缩放 0.3→0.94 起，整卡 RepaintBoundary，阴影 blur 32→12",
-    "主题：个性自定义新增「主题」栏目，默认沿用原样；微信主题 #EDEDED 画布 + #95EC69 用户气泡 + 白色助手气泡 + 双方头像 + 绿色强调；青春色彩青绿渐变 + 飘落绿叶；初恋感觉粉白渐变 + 飘落樱花",
-    "主题细节：顶栏、输入条、发送键、模式切换、空状态按钮全部跟随强调色，粒子层 IgnorePointer 且位于消息层下方，不挡点击、不压文字、不盖弹窗",
-    "版本号 3.2.0 (32000)"
+    "积分只认站内通道：只有「均衡」扣费，自备 Key 的模型不再弹积分不足、也不再扣站内积分",
+    "默认工作模式：冷启动进工作模式，之后记住上次选择，不再每次回对话页",
+    "权限页提速：先出骨架再探测，权限行去动画 + RepaintBoundary，进出页面不再卡一下",
+    "厂商图标回原厂 SVG：DeepSeek / OpenAI / 通义 / Kimi / 豆包 / 智谱 / 百度 / MiniMax / 阿里云 / 硅基流动 / 腾讯 / 阶跃 / 零一万物 官方线性标，均衡为圆圈打勾",
+    "七日签到包：兑换「每日签到领10万积分」后开通 7 天权益，每天到积分签到手动领 10 万，过期不补，共最多 70 万；充值卡标题/副标题/小字同步改清楚",
+    "网址可点：消息里的网址蓝色加粗，点击系统浏览器打开；AI 用 Markdown 链接起中文短名，认不出的站直接显示原始网址",
+    "加固：R8 minify + shrinkResources + 剥离调试符号 + Dart --obfuscate 符号混淆；内置凭据分片混淆存储",
+    "安装包 48.6 → 44.5 MB，覆盖安装保留数据"
   ],
-  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.2.0-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.3.0-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-3.2.0-arm64.apk",
-    "https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.2.0-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-3.3.0-arm64.apk",
+    "https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.3.0-arm64.apk"
   ],
-  "md5": "b4f8f73b50210a1a365e3308930328b7",
-  "sha256": "aa368cc34d29eed7dae1dedcb6bc5de4a15a0ad57aad675210f3eae940c3deca",
-  "size": 50980189,
+  "md5": "add393b10a65d9ec7d0af0be74f81315",
+  "sha256": "f94fd4af903e562d492fd712389d43f3b87f0548b958c7165e9825dc6a0e4693",
+  "size": 46705312,
   "force": false
 }
