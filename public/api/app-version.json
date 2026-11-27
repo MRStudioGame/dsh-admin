@@ -2,28 +2,26 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "3.3.0",
-  "build": 33000,
+  "version": "3.3.1",
+  "build": 33100,
   "minSdk": 26,
   "date": "2026-11-27",
-  "notes": "v3.3.0：自备模型不再被积分拦截；默认进工作模式并记住上次选择；权限页不再卡顿；厂商图标回到原厂 SVG，「均衡」固定圆圈打勾；积分充值新增「每日签到领10万积分」七日手动领取权益；对话与工作模式里的网址标蓝可点、AI 可起中文短名；同时开启 R8 与 Dart 混淆加固。",
+  "notes": "v3.3.1：积分充值卡片选中时的粒子与边缘流光真正显示（此前被渐变底色盖住），哪张卡居中哪张卡跑粒子、各档统一冷蓝白配色，推荐档粒子更密并带环绕星点闪烁。含 3.3.0 全部改动。",
   "changelog": [
-    "积分只认站内通道：只有「均衡」扣费，自备 Key 的模型不再弹积分不足、也不再扣站内积分",
-    "默认工作模式：冷启动进工作模式，之后记住上次选择，不再每次回对话页",
-    "权限页提速：先出骨架再探测，权限行去动画 + RepaintBoundary，进出页面不再卡一下",
-    "厂商图标回原厂 SVG：DeepSeek / OpenAI / 通义 / Kimi / 豆包 / 智谱 / 百度 / MiniMax / 阿里云 / 硅基流动 / 腾讯 / 阶跃 / 零一万物 官方线性标，均衡为圆圈打勾",
-    "七日签到包：兑换「每日签到领10万积分」后开通 7 天权益，每天到积分签到手动领 10 万，过期不补，共最多 70 万；充值卡标题/副标题/小字同步改清楚",
-    "网址可点：消息里的网址蓝色加粗，点击系统浏览器打开；AI 用 Markdown 链接起中文短名，认不出的站直接显示原始网址",
-    "加固：R8 minify + shrinkResources + 剥离调试符号 + Dart --obfuscate 符号混淆；内置凭据分片混淆存储",
-    "安装包 48.6 → 44.5 MB，覆盖安装保留数据"
+    "选中卡片特效修复：粒子与边缘流光此前画在渐变底下被盖住，现已移到渐变之上，真机可见",
+    "哪张卡选中哪张卡跑粒子：滑动切档时粒子跟随当前居中卡片，不再是只有推荐档有",
+    "配色统一：所有档位同一套冷蓝白光点，不按档位换色",
+    "推荐档更炫：粒子数量 14→26、上浮更快、单颗带同色辉光并呼吸缩放，另加 3 颗绕卡片中心环绕的十字星点闪烁",
+    "安装包 44.5 MB，覆盖 3.3.0 直接升级，数据保留",
+    "含 3.3.0 全部改动：自备模型不被积分拦截、默认工作模式、权限页提速、厂商原厂 SVG 图标、七日签到包、网址标蓝可点"
   ],
-  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.3.0-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.3.1-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-3.3.0-arm64.apk",
-    "https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.3.0-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-3.3.1-arm64.apk",
+    "https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.3.1-arm64.apk"
   ],
-  "md5": "add393b10a65d9ec7d0af0be74f81315",
-  "sha256": "f94fd4af903e562d492fd712389d43f3b87f0548b958c7165e9825dc6a0e4693",
+  "md5": "087fa9b0600d6198b03820c31e2da95c",
+  "sha256": "1257dd7f628d8801d9b35e2f00aaab094ac360c7664265e838bec22316114765",
   "size": 46705312,
   "force": false
 }
