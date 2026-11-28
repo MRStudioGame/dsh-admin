@@ -212,11 +212,12 @@ const ago=t=>{ if(!t)return '从未'; const ms=Date.now()-new Date(t).getTime();
   if(ms<86400000)return Math.floor(ms/3600000)+' 小时前'; return Math.floor(ms/86400000)+' 天前'; };
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),2200); }
 
-// ---------- GitHub 存储层 ----------
+// ---------- GitHub 存储层（每人一个文件，永不互相覆盖）----------
 const CFG={repo:'MRStudioGame/dsh-admin',branch:'data',pat:''};
-const DB_PATH='data/db.json';
-const CHAT_DIR='data/chats/';
-let dbSha=null, db={users:{},notices:[],logs:[],updated:0};
+const STORE_PATH='data/store.json';     // 公告 + 操作日志
+const USER_DIR='data/users/';           // 每个用户一个 json
+const CHAT_DIR='data/chats/';           // 每个用户一个聊天记录
+let storeSha=null, db={users:{},notices:[],logs:[],updated:0};
 
 function ghHeaders(){ return {Authorization:'Bearer '+CFG.pat, Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}; }
 function b64enc(str){ const bytes=new TextEncoder().encode(str); let b=''; bytes.forEach(x=>b+=String.fromCharCode(x)); return btoa(b); }
@@ -239,19 +240,42 @@ async function ghPut(path,text,message,sha){
   return await r.json();
 }
 
-async function loadDb(){
-  const f=await ghGet(DB_PATH);
-  if(!f){ db={users:{},notices:[],logs:[],updated:Date.now()}; dbSha=null; return; }
-  dbSha=f.sha;
-  try{ db=JSON.parse(b64dec(f.content)); }catch(e){ toast('db.json 解析失败，已用空库'); db={users:{},notices:[],logs:[]}; }
-  db.users=db.users||{}; db.notices=db.notices||[]; db.logs=db.logs||[];
+async function loadStore(){
+  // 1) 公告 / 日志
+  const f=await ghGet(STORE_PATH);
+  if(f){ storeSha=f.sha; try{ const o=JSON.parse(b64dec(f.content)); db.notices=o.notices||[]; db.logs=o.logs||[]; db.updated=o.updated||0; }catch(e){ db.notices=[];db.logs=[]; } }
+  else { storeSha=null; db.notices=[]; db.logs=[]; }
+  // 2) 用户文件（目录列表 + 逐个拉取）
+  const dir=await ghGet(USER_DIR);
+  const files=(Array.isArray(dir)?dir:[]).filter(x=>x.name&&x.name.endsWith('.json'));
+  const users={};
+  await Promise.all(files.map(async ent=>{
+    try{
+      const f2=await ghGet(USER_DIR+ent.name);
+      if(!f2)return;
+      const u=JSON.parse(b64dec(f2.content));
+      u._sha=f2.sha; u._path=USER_DIR+ent.name;
+      users[u.id||ent.name.replace('.json','')]=u;
+    }catch(e){}
+  }));
+  db.users=users;
 }
-async function saveDb(msg){
+async function saveStore(msg){
   db.updated=Date.now();
-  const body=JSON.stringify(db,null,1);
+  const body=JSON.stringify({notices:db.notices,logs:db.logs,updated:db.updated},null,1);
   for(let i=0;i<3;i++){
-    try{ const res=await ghPut(DB_PATH,body,msg||'console: update db',dbSha); dbSha=res.content.sha; return true; }
-    catch(e){ if(!e.conflict) throw e; await loadDb(); }
+    try{ const res=await ghPut(STORE_PATH,body,msg||'console: update store',storeSha); storeSha=res.content.sha; return true; }
+    catch(e){ if(!e.conflict) throw e; const f=await ghGet(STORE_PATH); storeSha=f?f.sha:null; }
+  }
+  toast('写入冲突，请重试'); return false;
+}
+async function saveUser(uid,msg){
+  const u=db.users[uid]; if(!u)return false;
+  const body=JSON.stringify(u,null,1);
+  for(let i=0;i<3;i++){
+    try{ const res=await ghPut(USER_DIR+uid+'.json',body,msg||('admin: update '+uid),u._sha);
+      u._sha=res.content.sha; u._path=USER_DIR+uid+'.json'; return true; }
+    catch(e){ if(!e.conflict) throw e; const f=await ghGet(USER_DIR+uid+'.json'); if(f){ u._sha=f.sha; } }
   }
   toast('写入冲突，请重试'); return false;
 }
@@ -263,9 +287,7 @@ async function loadChats(uid){
   const f=await ghGet(CHAT_DIR+uid+'.json');
   if(!f)return [];
   try{ const o=JSON.parse(b64dec(f.content)); return o.messages||o||[]; }catch(e){ return []; }
-}
-
-// ---------- 登录 ----------
+}// ---------- 登录 ----------
 let whoami='';
 function sortUsers(){ return Object.values(db.users).sort((a,b)=>(b.lastSeenAt||0)-(a.lastSeenAt||0)); }
 function statusOf(u){
@@ -283,7 +305,7 @@ async function login(){
     const me=await r.json(); whoami=me.login;
     Object.assign(CFG,{repo,branch:br,pat});
     localStorage.setItem('dsh_gh_cfg',JSON.stringify(CFG));
-    await loadDb();
+    await loadStore();
     $('#login').classList.add('hide'); $('#app').classList.remove('hide');
     $('#who').textContent='@'+whoami+' · '+repo+'@'+br;
     renderAll();
@@ -418,12 +440,14 @@ async function adjustPoints(uid){
   const d=Number($('#pDelta').value.trim()), r=$('#pReason').value.trim();
   if(!Number.isFinite(d)||d===0){ toast('积分变动必须是整数且不为 0'); return; }
   if(!r){ toast('原因必填'); return; }
-  const next=Math.max(0,(u.points||0)+d);
+  const before=u.points||0;
+  const next=Math.max(0,before+d);
   u.points=next;
+  u.pointsAt=new Date().toISOString();
   u.ledger=u.ledger||[];
-  u.ledger.push({at:Date.now(),delta:next-(u.points-d),reason:'管理员调整：'+r,balance:next,by:whoami});
-  pushLog('调整积分',u.nickname||uid,`${d>0?'+':''}${d}（${r}）→ ${next}`);
-  await saveDb('admin: adjust points '+uid);
+  u.ledger.push({at:Date.now(),delta:next-before,reason:'管理员调整：'+r,balance:next,by:whoami});
+  pushLog('调整积分',u.nickname||uid,`${next-before>0?'+':''}${next-before}（${r}）→ ${next}`);
+  await saveUser(uid); await saveStore('admin: points log');
   toast('已调整为 '+next); renderAll(); drawUser();
 }
 
@@ -435,7 +459,7 @@ async function banUser(uid){
   u.status='banned';
   u.ban={days,reason,at:Date.now(),untilAt:Date.now()+days*86400000,by:whoami};
   pushLog('封禁账号',u.nickname||uid,`${days} 天，理由：${reason}`);
-  await saveDb('admin: ban '+uid);
+  await saveUser(uid); await saveStore('admin: ban log');
   toast('已封禁 '+days+' 天'); renderAll(); drawUser();
 }
 
@@ -444,7 +468,7 @@ async function unbanUser(uid){
   if(statusOf(u)!=='banned'){ toast('该账号当前未被封禁'); return; }
   u.status='active'; u.ban=null;
   pushLog('解除封禁',u.nickname||uid,'');
-  await saveDb('admin: unban '+uid);
+  await saveUser(uid); await saveStore('admin: unban log');
   toast('已解封'); renderAll(); drawUser();
 }
 
@@ -462,7 +486,7 @@ async function sendNotice(){
   if(!title||!body){ toast('标题和正文都要填'); return; }
   db.notices.unshift({id:'n'+Date.now(),scope,target,title,body,at:Date.now(),readBy:[],by:whoami});
   pushLog('发送公告',scope==='all'?'全体':target,title);
-  await saveDb('admin: notice');
+  await saveStore('admin: notice');
   $('#nTitle').value=''; $('#nBody').value=''; $('#nTarget').value='';
   toast('公告已发送'); renderAll();
 }
@@ -479,7 +503,7 @@ function exportCsv(){
 $('#btnLogin').onclick=login;
 $('#pat').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
 $('#btnOut').onclick=()=>{ localStorage.removeItem('dsh_gh_cfg'); location.reload(); };
-$('#btnReload').onclick=async()=>{ try{ await loadDb(); renderAll(); toast('已刷新'); }catch(e){ toast(e.message); } };
+$('#btnReload').onclick=async()=>{ try{ await loadStore(); renderAll(); toast('已刷新'); }catch(e){ toast(e.message); } };
 $('#nav').addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b)return;
   $$('#nav button').forEach(x=>x.classList.toggle('on',x===b));
