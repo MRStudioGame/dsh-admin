@@ -1,8 +1,5 @@
 {
- "notices": [
-  {"id":"t_sched","scope":"all","target":"","title":"预定公告（15 分钟后发布）","body":"这条现在不该弹。","at":"2026-11-28T16:51:30+08:00","expireAt":null,"enabled":true,"readBy":[]},
-  {"id":"t_off","scope":"all","target":"","title":"已停用公告","body":"这条也不该弹。","at":"2026-11-28T14:49:58+08:00","expireAt":null,"enabled":false,"readBy":[]},
-  {"id":"t_exp","scope":"all","target":"","title":"已到期公告","body":"这条过期了，不该弹。","at":"2026-11-28T14:49:58+08:00","expireAt":"2026-11-28T16:39:58+08:00","enabled":true,"readBy":[]}
- ],
- "logs": [], "updated": 1764300000000
+ "notices": [],
+ "logs": [],
+ "updated": 1764300000000
 }
