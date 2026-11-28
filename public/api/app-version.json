@@ -2,27 +2,28 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "3.3.3",
-  "build": 33300,
+  "version": "3.3.4",
+  "build": 33400,
   "minSdk": 26,
   "date": "2026-11-28",
-  "notes": "v3.3.3：管理端用 GitHub 仓库当数据面，封禁整屏锁定 + 申诉邮件，公告进 App 弹窗，侧边栏显示设备 ID。含 3.3.2 全部改动。",
+  "notes": "v3.3.4：管理端公告支持预定发布（设定发布时间）、自动停用时间、停用/启用、删除、改时间；客户端按时间与启用状态过滤，停用或到期后不再弹。含 3.3.3 全部改动。",
   "changelog": [
-    "管理端后端：改用 GitHub dsh-admin 仓 data 分支，每用户一个 json，公告/封禁/日志真实下发",
-    "封禁锁定页：启动即查，命中整屏锁定，显示理由、天数、到期时间、账号标识，蓝色「申诉」调起邮件",
-    "公告弹窗：全体或指定用户，进 App 弹一次，「知道了」写入已读不再重复",
-    "侧边栏显示设备 ID，客服核对封禁与申诉直接对照",
-    "封禁检查与启动动画并行，正常启动不额外等待",
-    "安装包 arm64-v8a 44.6 MB，覆盖 3.3.2 直接升级，数据保留"
+    "公告可预定：设定未来发布时间，到点客户端才弹",
+    "公告可定时停用：设定停用时间，过期自动不弹",
+    "公告可手动停用/启用，状态实时可见（生效中 / 待发布 / 已停用 / 已到期）",
+    "公告可删除，删除后客户端不会再看到；支持改发布时间与停用时间",
+    "管理端概览新增可视化图表：7 日活跃折线、账号状态环图、积分分布、版本分布",
+    "管理端控制台新增密码门（进入需输入管理密码）",
+    "安装包 arm64-v8a 44.6 MB，覆盖 3.3.3 直接升级，数据保留"
   ],
-  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.3.3-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.3.4-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-3.3.3-arm64.apk",
-    "https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.3.3-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-3.3.4-arm64.apk",
+    "https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.3.4-arm64.apk"
   ],
-  "md5": "515bc1bb1ab457e262071b2371bba324",
-  "sha256": "f4c50ee025e64710f0d49f92301fbd239348348ddd916816eb270ffa796b9ac4",
-  "size": 46770848,
+  "md5": "8a881a5d8d637414bfa9cf264c6ef4d5",
+  "sha256": "6cef99da65f3867dd8e6df0228c1db8f2018fcf30442478fa1cd60b1fb77a6e2",
+  "size": 46770844,
   "supportEmail": "abcdefg1230852@qq.com",
   "force": false
 }
