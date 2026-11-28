@@ -74,10 +74,39 @@ tbody tr:hover{background:rgba(255,255,255,.03)}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2))}
 .mono{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:#9fb0c5;word-break:break-all}
 .dayrow{display:grid;grid-template-columns:92px 1fr 44px;gap:10px;align-items:center;margin-bottom:8px;font-size:12px;color:var(--dim)}
-@media(max-width:640px){.wrap{padding:12px}.grid4{gap:10px}.card{padding:14px;border-radius:14px}.kpi{font-size:23px}th,td{padding:8px}.desk-only{display:none}.drawer{padding:14px}.dayrow{grid-template-columns:70px 1fr 38px}}
+/* 密码门 + 图表 */
+#gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.gate-card{width:min(380px,100%);background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:28px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.gate-card .lock{width:56px;height:56px;margin:0 auto 14px;border-radius:16px;background:rgba(124,108,255,.16);display:flex;align-items:center;justify-content:center;font-size:26px}
+.gate-card h1{font-size:19px;margin:0 0 6px}
+.gate-card p{color:var(--dim);font-size:13px;margin:0 0 18px}
+.gate-card input{width:100%;text-align:center;letter-spacing:6px;font-size:20px;font-weight:700}
+.gate-card .btn{width:100%;margin-top:14px;justify-content:center}
+.gate-err{color:#ffb3b3;font-size:12px;height:18px;margin-top:8px}
+.chart-wrap{background:#0e141c;border:1px solid var(--line);border-radius:14px;padding:10px}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--dim);margin-top:10px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:middle}
+.hbars{display:grid;gap:9px;margin-top:6px}
+.hbar{display:grid;grid-template-columns:64px 1fr 48px;gap:10px;align-items:center;font-size:12px;color:var(--dim)}
+.hbar .track{height:10px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}
+.hbar .track i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#7c6cff,#33d6b4)}
+@media(max-width:640px){.wrap{padding:12px}.grid4{gap:10px}.card{padding:14px;border-radius:14px}.kpi{font-size:23px}th,td{padding:8px}.desk-only{display:none}.drawer{padding:14px}.dayrow{grid-template-columns:70px 1fr 38px}.hbar{grid-template-columns:56px 1fr 34px}}
 </style>
 </head>
-<body><section id="login">
+<body>
+<section id="gate">
+  <div class="gate-card">
+    <div class="lock">🔒</div>
+    <h1>管理端登录</h1>
+    <p>请输入管理密码后进入控制台</p>
+    <input id="gatePwd" type="password" inputmode="numeric" maxlength="12" placeholder="••••••" autocomplete="off">
+    <div class="gate-err" id="gateErr"></div>
+    <button class="btn" id="btnGate">进入控制台</button>
+  </div>
+</section>
+
+<section id="login" class="hide">
   <div class="login-card">
     <h1>DSH 控制台 <span style="color:var(--brand2)">·</span> GitHub 数据版</h1>
     <p>数据直接存在 GitHub 仓库里，不需要任何服务器。首次使用填一个 Fine-grained PAT（权限只需 Contents 读写，限定本仓库）。</p>
@@ -120,8 +149,13 @@ tbody tr:hover{background:rgba(255,255,255,.03)}
       <div class="card"><div class="kpi" id="kBanned">0</div><div class="lab">封禁中</div></div>
       <div class="card"><div class="kpi" id="kPoints">0</div><div class="lab">全站积分总量</div></div>
     </div>
-    <h2>近 7 日活跃（按最后在线时间）</h2>
+    <h2>活跃趋势（近 7 日，按最后在线时间）</h2>
     <div class="card" id="chart7"></div>
+    <div class="grid2" style="margin-top:14px">
+      <div class="card"><h3>账号状态</h3><div id="chartStatus"></div></div>
+      <div class="card"><h3>积分分布（人数）</h3><div id="chartPoints"></div></div>
+    </div>
+    <div class="card" style="margin-top:14px"><h3>客户端版本分布</h3><div id="chartVersion"></div></div>
     <h2>最近上报设备</h2>
     <div class="card" style="padding:0;overflow:auto">
       <table id="recentTable"><thead><tr><th>用户</th><th>设备</th><th class="desk-only">版本</th><th>最后在线</th></tr></thead><tbody></tbody></table>
@@ -351,20 +385,101 @@ async function login(){
 // ---------- 渲染 ----------
 function renderAll(){ renderDash(); renderUsers(); renderBan(); renderNotices(); renderLogs(); }
 
+// —— 轻量 SVG 图表（不依赖外部图表库，离线也能画）——
+function lineChart(days,active,regs){
+  const W=760,H=210,P={l:34,r:14,t:14,b:28};
+  const n=days.length, maxV=Math.max(1,...active,...regs);
+  const x=i=>P.l+(W-P.l-P.r)*(n===1?0.5:i/(n-1));
+  const y=v=>H-P.b-(H-P.t-P.b)*(v/maxV);
+  const pts=arr=>arr.map((v,i)=>`${x(i)},${y(v)}`).join(' ');
+  const area=arr=>`M${x(0)},${H-P.b} `+arr.map((v,i)=>`L${x(i)},${y(v)}`).join(' ')+` L${x(n-1)},${H-P.b} Z`;
+  const grid=[0,0.5,1].map(f=>{
+    const gy=y(maxV*f);
+    return `<line x1="${P.l}" y1="${gy}" x2="${W-P.r}" y2="${gy}" stroke="rgba(255,255,255,.06)"/>
+            <text x="${P.l-8}" y="${gy+4}" fill="#7c8aa0" font-size="10" text-anchor="end">${Math.round(maxV*f)}</text>`;
+  }).join('');
+  const labels=days.map((d,i)=>{
+    const t=`${d.getMonth()+1}/${d.getDate()}`;
+    return `<text x="${x(i)}" y="${H-8}" fill="#7c8aa0" font-size="10" text-anchor="middle">${t}</text>`;
+  }).join('');
+  const dotsA=active.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3.5" fill="#7c6cff"><title>${days[i].getMonth()+1}/${days[i].getDate()} 活跃 ${v} 人</title></circle>`).join('');
+  const dotsR=regs.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="#33d6b4"><title>${days[i].getMonth()+1}/${days[i].getDate()} 新增 ${v} 人</title></circle>`).join('');
+  const total=active.reduce((a,b)=>a+b,0)+regs.reduce((a,b)=>a+b,0);
+  return `<div class="chart-wrap"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="近 7 日活跃趋势">
+    <defs><linearGradient id="gA" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(124,108,255,.45)"/><stop offset="100%" stop-color="rgba(124,108,255,0)"/>
+    </linearGradient></defs>
+    ${grid}
+    <path d="${area(active)}" fill="url(#gA)"/>
+    <polyline points="${pts(active)}" fill="none" stroke="#7c6cff" stroke-width="2.4" stroke-linejoin="round"/>
+    <polyline points="${pts(regs)}" fill="none" stroke="#33d6b4" stroke-width="1.8" stroke-dasharray="5 4" stroke-linejoin="round"/>
+    ${dotsA}${dotsR}${labels}
+  </svg>
+  <div class="legend"><span><i style="background:#7c6cff"></i>每日活跃</span><span><i style="background:#33d6b4"></i>每日新增</span>
+  <span style="margin-left:auto;color:#e6edf7">7 日合计 ${total} 人次</span></div></div>`;
+}
+
+function donut(parts){
+  const size=200,cx=100,cy=92,r=64,ring=22;
+  const total=parts.reduce((s,p)=>s+p.value,0);
+  let acc=0;
+  const arcs=parts.map(p=>{
+    const frac=total?p.value/total:0;
+    const a0=acc*2*Math.PI- Math.PI/2, a1=(acc+frac)*2*Math.PI- Math.PI/2;
+    acc+=frac;
+    if(frac<=0) return '';
+    const x0=cx+r*Math.cos(a0), y0=cy+r*Math.sin(a0), x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+    if(frac>=0.9999) return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${p.color}" stroke-width="${ring}"/>`;
+    return `<path d="M${x0},${y0} A${r},${r} 0 ${frac>0.5?1:0} 1 ${x1},${y1}" fill="none" stroke="${p.color}" stroke-width="${ring}" stroke-linecap="butt"/>`;
+  }).join('');
+  const pct=v=>total?Math.round(v/total*100):0;
+  return `<div class="chart-wrap" style="background:transparent;border:none;padding:0;text-align:center">
+    <svg viewBox="0 0 ${size} ${size}" style="max-width:200px;margin:0 auto">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="${ring}"/>
+      ${arcs}
+      <text x="${cx}" y="${cy-2}" fill="#e6edf7" font-size="22" font-weight="700" text-anchor="middle">${total}</text>
+      <text x="${cx}" y="${cy+18}" fill="#7c8aa0" font-size="11" text-anchor="middle">总用户</text>
+    </svg>
+    <div class="legend" style="justify-content:center">${parts.map(p=>`<span><i style="background:${p.color}"></i>${p.label} ${p.value}（${pct(p.value)}%）</span>`).join('')}</div>
+  </div>`;
+}
+
+function ts(v){ if(!v)return 0; const n=(typeof v==='number')?v:Date.parse(v); return isNaN(n)?0:n; }
 function renderDash(){
   const us=Object.values(db.users);
   const total=us.length, banned=us.filter(u=>statusOf(u)==='banned').length;
-  const active=us.filter(u=>(Date.now()-(u.lastSeenAt||0))<86400000).length;
+  const active=us.filter(u=>ts(u.lastSeenAt)&&(Date.now()-ts(u.lastSeenAt))<86400000).length;
   const pts=us.reduce((s,u)=>s+(u.points||0),0);
   $('#kTotal').textContent=total; $('#kActive').textContent=active;
   $('#kBanned').textContent=banned; $('#kPoints').textContent=pts.toLocaleString();
   const days=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-i); days.push(d); }
   const counts=days.map(d=>us.filter(u=>u.lastSeenAt&&new Date(u.lastSeenAt)>=d&&new Date(u.lastSeenAt)<new Date(d.getTime()+86400000)).length);
-  const max=Math.max(1,...counts);
-  $('#chart7').innerHTML=days.map((d,i)=>{
-    const lab=`${d.getMonth()+1}/${d.getDate()}`;
-    return `<div class="dayrow"><span>${lab}</span><div class="bar"><i style="width:${counts[i]/max*100}%"></i></div><span style="text-align:right;color:var(--txt)">${counts[i]}</span></div>`;
-  }).join('') || '<div class="empty">暂无数据</div>';
+  const regs=days.map(d=>us.filter(u=>u.createdAt&&new Date(u.createdAt)>=d&&new Date(u.createdAt)<new Date(d.getTime()+86400000)).length);
+  $('#chart7').innerHTML=lineChart(days,counts,regs);
+
+  // 账号状态环形图
+  const okC=total-banned;
+  $('#chartStatus').innerHTML=donut([
+    {label:'正常',value:okC,color:'#33d6b4'},
+    {label:'封禁中',value:banned,color:'#ff6b6b'}
+  ])+(total===0?'<div class="lab" style="text-align:center;margin-top:8px">还没有客户端上报</div>':'');
+
+  // 积分分布
+  const buckets=[{l:'0',t:u=>(u.points||0)<=0},{l:'1-1万',t:u=>(u.points||0)>0&&(u.points||0)<10000},
+                 {l:'1万-10万',t:u=>(u.points||0)>=10000&&(u.points||0)<100000},{l:'10万以上',t:u=>(u.points||0)>=100000}];
+  const bCounts=buckets.map(b=>us.filter(b.t).length);
+  const bMax=Math.max(1,...bCounts);
+  $('#chartPoints').innerHTML=`<div class="hbars">${buckets.map((b,i)=>`
+    <div class="hbar"><span>${b.l}</span><div class="track"><i style="width:${bCounts[i]/bMax*100}%"></i></div><span style="color:#e6edf7;text-align:right">${bCounts[i]}</span></div>`).join('')}</div>`;
+
+  // 版本分布
+  const vers={};
+  us.forEach(u=>{ const k=(u.version||'未知'); vers[k]=(vers[k]||0)+1; });
+  const vList=Object.entries(vers).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const vMax=Math.max(1,...vList.map(x=>x[1]));
+  $('#chartVersion').innerHTML=vList.length?`<div class="hbars">${vList.map(([v,n])=>`
+    <div class="hbar"><span>v${esc(v)}</span><div class="track"><i style="width:${n/vMax*100}%"></i></div><span style="color:#e6edf7;text-align:right">${n}</span></div>`).join('')}</div>`:'<div class="empty">还没有数据</div>';
+
   const rows=sortUsers().slice(0,15);
   $('#recentTable tbody').innerHTML=rows.length?rows.map(u=>`<tr><td>${esc(u.nickname||u.id)}</td><td class="mono">${esc(u.deviceId||'-')}</td><td class="desk-only">${esc(u.version||'-')}</td><td>${ago(u.lastSeenAt)}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">还没有客户端上报</td></tr>';
 }
@@ -566,15 +681,42 @@ document.addEventListener('click',e=>{
   if(b.dataset.act==='unban') unbanUser(id);
 });
 
-// ---------- 启动 ----------
-(function boot(){
+// ---------- 密码门（201301，只存 sha256，源码里看不到明文）----------
+const GATE_HASH='15c93df17e8a3108d0a102ddc66cec591ab5a11101c4035383c42002b3b35ca8';
+async function sha256hex(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function gateSubmit(){
+  const v=($('#gatePwd').value||'').trim();
+  const err=$('#gateErr');
+  if(!v){ err.textContent='请输入密码'; return; }
+  const h=await sha256hex(v);
+  if(h!==GATE_HASH){ err.textContent='密码不正确'; $('#gatePwd').value=''; return; }
+  err.textContent='';
+  sessionStorage.setItem('dsh_gate','1');
+  openGate();
+}
+function openGate(){
+  $('#gate').classList.add('hide');
   const saved=localStorage.getItem('dsh_gh_cfg');
-  if(!saved)return;
+  if(saved){ bootLogin(); } else { $('#login').classList.remove('hide'); }
+}
+$('#btnGate').onclick=gateSubmit;
+$('#gatePwd').addEventListener('keydown',e=>{ if(e.key==='Enter') gateSubmit(); });
+
+// ---------- 启动 ----------
+function bootLogin(){
+  const saved=localStorage.getItem('dsh_gh_cfg');
+  if(!saved){ $('#login').classList.remove('hide'); return; }
   try{
     const o=JSON.parse(saved); Object.assign(CFG,o);
     $('#repo').value=CFG.repo; $('#branch').value=CFG.branch; $('#pat').value=CFG.pat;
     login();
-  }catch(e){}
+  }catch(e){ $('#login').classList.remove('hide'); }
+}
+(function boot(){
+  if(sessionStorage.getItem('dsh_gate')==='1'){ openGate(); }
 })();
 </script>
 </body>
