@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DSH 控制台 · GitHub 数据版</title>
+<style>
+:root{--bg:#0b0e14;--panel:#141a24;--panel2:#1a222e;--line:#26313f;--txt:#e8eff7;--dim:#8fa0b6;
+--brand:#7c6cff;--brand2:#33d6b4;--ok:#33d6b4;--danger:#ff6b6b;--warn:#ffb020}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.6 "Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+.hide{display:none!important}
+.wrap{max-width:1240px;margin:0 auto;padding:18px}
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{width:100%;max-width:460px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:26px}
+.login-card h1{font-size:21px;margin:0 0 6px}
+.login-card p{color:var(--dim);font-size:13px;margin:0 0 16px}
+label{display:block;font-size:13px;color:var(--dim);margin:14px 0 6px}
+input,textarea,select{width:100%;background:#0f151d;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:11px 12px;font:inherit;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--brand)}
+textarea{resize:vertical;min-height:110px}
+.btn{border:0;border-radius:10px;padding:11px 16px;font:inherit;font-weight:600;cursor:pointer;background:var(--brand);color:#fff}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt)}
+.btn.danger{background:var(--danger)}
+.btn.ok{background:var(--ok);color:#04201a}
+.btn.sm{padding:7px 11px;font-size:13px;border-radius:8px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+header{position:sticky;top:0;z-index:20;background:rgba(11,14,20,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.head-in{max-width:1240px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font-weight:800;letter-spacing:.04em}
+.logo span{color:var(--brand2)}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav button{background:transparent;border:1px solid var(--line);color:var(--dim);border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;cursor:pointer}
+nav button.on{color:#fff;border-color:rgba(124,108,255,.7);background:rgba(124,108,255,.18)}
+.spacer{flex:1}
+.who{font-size:12px;color:var(--dim);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.grid2{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}
+@media(max-width:900px){.grid4{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+.kpi{font-size:30px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.kpi small{font-size:13px;font-weight:500;color:var(--dim);margin-left:4px}
+.lab{color:var(--dim);font-size:13px;margin-top:2px}
+h2{font-size:18px;margin:24px 0 10px}
+h3{font-size:15px;margin:0 0 10px;color:#cdd9e8}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--dim);font-weight:600;font-size:12px;background:var(--panel);position:sticky;top:0}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;border:1px solid var(--line);color:var(--dim);white-space:nowrap}
+.pill.ok{color:#9df5e4;border-color:rgba(51,214,180,.45)}
+.pill.ban{color:#ffb3b3;border-color:rgba(255,107,107,.5)}
+.empty{color:var(--dim);font-size:13px;padding:18px 10px;text-align:center}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#1e2836;border:1px solid var(--line);color:#fff;padding:11px 16px;border-radius:12px;font-size:13px;z-index:80;box-shadow:0 10px 30px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:.2s}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(-4px)}
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;display:none}
+.mask.on{display:block}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(780px,100%);background:#111722;border-left:1px solid var(--line);z-index:50;transform:translateX(103%);transition:.22s;overflow:auto;padding:18px}
+.drawer.on{transform:none}
+.drawer-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.drawer-head h2{margin:0;flex:1;font-size:17px}
+.tabs{display:flex;gap:6px;margin:12px 0}
+.tabs button{background:transparent;border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}
+.tabs button.on{background:rgba(124,108,255,.18);color:#fff;border-color:rgba(124,108,255,.7)}
+.chat{background:#0e141c;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.chat b{font-size:12px;color:var(--dim);font-weight:600;display:block;margin-bottom:3px}
+.chat.user{border-left:3px solid var(--brand)}
+.chat.assistant{border-left:3px solid var(--brand2)}
+.plus{color:var(--ok);font-weight:700}
+.minus{color:var(--danger);font-weight:700}
+.bar{height:8px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2))}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:#9fb0c5;word-break:break-all}
+.dayrow{display:grid;grid-template-columns:92px 1fr 44px;gap:10px;align-items:center;margin-bottom:8px;font-size:12px;color:var(--dim)}
+@media(max-width:640px){.wrap{padding:12px}.grid4{gap:10px}.card{padding:14px;border-radius:14px}.kpi{font-size:23px}th,td{padding:8px}.desk-only{display:none}.drawer{padding:14px}.dayrow{grid-template-columns:70px 1fr 38px}}
+</style>
+</head>
+<body><section id="login">
+  <div class="login-card">
+    <h1>DSH 控制台 <span style="color:var(--brand2)">·</span> GitHub 数据版</h1>
+    <p>数据直接存在 GitHub 仓库里，不需要任何服务器。首次使用填一个 Fine-grained PAT（权限只需 Contents 读写，限定本仓库）。</p>
+    <label>数据仓库 (owner/repo)</label>
+    <input id="repo" value="MRStudioGame/dsh-admin" autocomplete="off">
+    <label>数据分支</label>
+    <input id="branch" value="data" autocomplete="off">
+    <label>GitHub Token（github_pat_… / ghp_…）</label>
+    <input id="pat" type="password" placeholder="github_pat_..." autocomplete="off">
+    <div class="row" style="margin-top:18px">
+      <button class="btn" id="btnLogin" style="flex:1">验证并进入</button>
+    </div>
+    <p style="margin-top:14px;font-size:12px;line-height:1.7">Token 只存在本机浏览器 localStorage，不上传任何服务器。<br>生成路径：GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → 只勾选 Contents: Read and write。</p>
+  </div>
+</section>
+
+<div id="app" class="hide">
+<header>
+  <div class="head-in">
+    <div class="logo">DSH<span>·</span>控制台</div>
+    <nav id="nav">
+      <button data-tab="dash" class="on">概览</button>
+      <button data-tab="users">用户</button>
+      <button data-tab="ban">封禁</button>
+      <button data-tab="notice">公告</button>
+      <button data-tab="log">操作日志</button>
+    </nav>
+    <div class="spacer"></div>
+    <div class="who" id="who"></div>
+    <button class="btn ghost sm" id="btnReload">刷新</button>
+    <button class="btn ghost sm" id="btnOut">退出</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <section id="tab-dash">
+    <div class="grid4">
+      <div class="card"><div class="kpi" id="kTotal">0</div><div class="lab">注册用户（客户端上报，非模拟）</div></div>
+      <div class="card"><div class="kpi" id="kActive">0</div><div class="lab">近 24 小时活跃</div></div>
+      <div class="card"><div class="kpi" id="kBanned">0</div><div class="lab">封禁中</div></div>
+      <div class="card"><div class="kpi" id="kPoints">0</div><div class="lab">全站积分总量</div></div>
+    </div>
+    <h2>近 7 日活跃（按最后在线时间）</h2>
+    <div class="card" id="chart7"></div>
+    <h2>最近上报设备</h2>
+    <div class="card" style="padding:0;overflow:auto">
+      <table id="recentTable"><thead><tr><th>用户</th><th>设备</th><th class="desk-only">版本</th><th>最后在线</th></tr></thead><tbody></tbody></table>
+    </div>
+  </section>
+
+  <section id="tab-users" class="hide">
+    <div class="card">
+      <div class="row">
+        <input id="qUser" placeholder="搜昵称 / 设备 / ID" style="max-width:280px">
+        <select id="qStatus" style="max-width:160px">
+          <option value="">全部状态</option><option value="active">正常</option><option value="banned">封禁中</option>
+        </select>
+        <button class="btn sm" id="btnSearch">查询</button>
+        <button class="btn ghost sm" id="btnExport">导出 CSV</button>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow:auto;margin-top:14px">
+      <table id="userTable">
+        <thead><tr><th>用户</th><th>设备</th><th class="desk-only">版本</th><th>积分</th><th>状态</th><th class="desk-only">注册</th><th>最后在线</th><th>操作</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="tab-ban" class="hide">
+    <div class="card">
+      <h3>被封禁账号</h3>
+      <p class="lab" style="margin:0 0 12px">客户端启动即读取封禁表，命中就整屏锁定，只显示封禁详情与蓝色「申诉」（跳官方邮箱）。</p>
+      <div style="overflow:auto"><table id="banTable"><thead><tr><th>用户</th><th>天数</th><th>理由</th><th>到期</th><th>操作</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="tab-notice" class="hide">
+    <div class="grid2">
+      <div class="card">
+        <h3>发公告</h3>
+        <label>范围</label>
+        <select id="nScope"><option value="all">全体用户</option><option value="user">指定用户</option></select>
+        <div id="nTargetWrap" class="hide">
+          <label>目标用户（昵称或 ID）</label>
+          <input id="nTarget" placeholder="输入昵称或用户 ID" autocomplete="off">
+        </div>
+        <label>标题</label>
+        <input id="nTitle" maxlength="60" placeholder="例如：3.3.3 已发布">
+        <label>正文</label>
+        <textarea id="nBody" placeholder="写清楚要通知的内容"></textarea>
+        <div class="row" style="margin-top:14px"><button class="btn" id="btnNotice">发送公告</button></div>
+        <p class="lab" style="margin-top:10px">客户端进入首页时拉取，弹一次并记录已读，不会每次打开都弹。</p>
+      </div>
+      <div class="card">
+        <h3>已发公告</h3>
+        <div id="noticeList" style="max-height:520px;overflow:auto"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-log" class="hide">
+    <div class="card" style="padding:0;overflow:auto">
+      <table id="logTable"><thead><tr><th>时间</th><th>操作</th><th>对象</th><th class="desk-only">详情</th></tr></thead><tbody></tbody></table>
+    </div>
+  </section>
+</div>
+</div>
+
+<div class="mask" id="mask"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h2 id="dName">用户</h2>
+    <button class="btn ghost sm" id="dClose">关闭</button>
+  </div>
+  <div class="mono" id="dMeta"></div>
+  <div class="tabs" id="dTabs">
+    <button data-dt="ledger" class="on">积分流水</button>
+    <button data-dt="chat">聊天记录</button>
+    <button data-dt="ops">加减分 / 封禁</button>
+  </div>
+  <div id="dBody"></div>
+</div>
+<div class="toast" id="toast"></div><script>
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=t=>{ if(!t)return '-'; const d=new Date(t); const p=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; };
+const ago=t=>{ if(!t)return '从未'; const ms=Date.now()-new Date(t).getTime();
+  if(ms<60000)return '刚刚'; if(ms<3600000)return Math.floor(ms/60000)+' 分钟前';
+  if(ms<86400000)return Math.floor(ms/3600000)+' 小时前'; return Math.floor(ms/86400000)+' 天前'; };
+function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),2200); }
+
+// ---------- GitHub 存储层 ----------
+const CFG={repo:'MRStudioGame/dsh-admin',branch:'data',pat:''};
+const DB_PATH='data/db.json';
+const CHAT_DIR='data/chats/';
+let dbSha=null, db={users:{},notices:[],logs:[],updated:0};
+
+function ghHeaders(){ return {Authorization:'Bearer '+CFG.pat, Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}; }
+function b64enc(str){ const bytes=new TextEncoder().encode(str); let b=''; bytes.forEach(x=>b+=String.fromCharCode(x)); return btoa(b); }
+function b64dec(b64){ const bin=atob(b64.replace(/\n/g,'')); const bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i); return new TextDecoder().decode(bytes); }
+
+async function ghGet(path){
+  const url=`https://api.github.com/repos/${CFG.repo}/contents/${path}?ref=${CFG.branch}&t=${Date.now()}`;
+  const r=await fetch(url,{headers:ghHeaders()});
+  if(r.status===404)return null;
+  if(!r.ok)throw new Error('读取失败 '+r.status+' '+(await r.text()).slice(0,120));
+  return await r.json();
+}
+async function ghPut(path,text,message,sha){
+  const r=await fetch(`https://api.github.com/repos/${CFG.repo}/contents/${path}`,{
+    method:'PUT',headers:{...ghHeaders(),'Content-Type':'application/json'},
+    body:JSON.stringify({message,content:b64enc(text),branch:CFG.branch,sha:sha||undefined})});
+  if(r.status===409||r.status===422){ const e=new Error('conflict'); e.conflict=true; throw e; }
+  if(!r.ok)throw new Error('写入失败 '+r.status+' '+(await r.text()).slice(0,160));
+  return await r.json();
+}
+
+async function loadDb(){
+  const f=await ghGet(DB_PATH);
+  if(!f){ db={users:{},notices:[],logs:[],updated:Date.now()}; dbSha=null; return; }
+  dbSha=f.sha;
+  try{ db=JSON.parse(b64dec(f.content)); }catch(e){ toast('db.json 解析失败，已用空库'); db={users:{},notices:[],logs:[]}; }
+  db.users=db.users||{}; db.notices=db.notices||[]; db.logs=db.logs||[];
+}
+async function saveDb(msg){
+  db.updated=Date.now();
+  const body=JSON.stringify(db,null,1);
+  for(let i=0;i<3;i++){
+    try{ const res=await ghPut(DB_PATH,body,msg||'console: update db',dbSha); dbSha=res.content.sha; return true; }
+    catch(e){ if(!e.conflict) throw e; await loadDb(); }
+  }
+  toast('写入冲突，请重试'); return false;
+}
+function pushLog(action,obj,detail){
+  db.logs.unshift({at:Date.now(),action,obj,detail:detail||'',by:whoami||'admin'});
+  if(db.logs.length>300) db.logs.length=300;
+}
+async function loadChats(uid){
+  const f=await ghGet(CHAT_DIR+uid+'.json');
+  if(!f)return [];
+  try{ const o=JSON.parse(b64dec(f.content)); return o.messages||o||[]; }catch(e){ return []; }
+}
+
+// ---------- 登录 ----------
+let whoami='';
+function sortUsers(){ return Object.values(db.users).sort((a,b)=>(b.lastSeenAt||0)-(a.lastSeenAt||0)); }
+function statusOf(u){
+  if(u.status==='banned'&&(!u.ban||!u.ban.untilAt||u.ban.untilAt>Date.now())) return 'banned';
+  return 'active';
+}
+
+async function login(){
+  const repo=$('#repo').value.trim(), br=$('#branch').value.trim(), pat=$('#pat').value.trim();
+  if(!repo||!pat){ toast('仓库与 Token 必填'); return; }
+  const btn=$('#btnLogin'); btn.disabled=true; btn.textContent='验证中…';
+  try{
+    const r=await fetch('https://api.github.com/user',{headers:{Authorization:'Bearer '+pat,'X-GitHub-Api-Version':'2022-11-28'}});
+    if(!r.ok) throw new Error('Token 无效或已过期');
+    const me=await r.json(); whoami=me.login;
+    Object.assign(CFG,{repo,branch:br,pat});
+    localStorage.setItem('dsh_gh_cfg',JSON.stringify(CFG));
+    await loadDb();
+    $('#login').classList.add('hide'); $('#app').classList.remove('hide');
+    $('#who').textContent='@'+whoami+' · '+repo+'@'+br;
+    renderAll();
+  }catch(e){ toast(e.message||'登录失败'); }
+  finally{ btn.disabled=false; btn.textContent='验证并进入'; }
+}
+
+// ---------- 渲染 ----------
+function renderAll(){ renderDash(); renderUsers(); renderBan(); renderNotices(); renderLogs(); }
+
+function renderDash(){
+  const us=Object.values(db.users);
+  const total=us.length, banned=us.filter(u=>statusOf(u)==='banned').length;
+  const active=us.filter(u=>(Date.now()-(u.lastSeenAt||0))<86400000).length;
+  const pts=us.reduce((s,u)=>s+(u.points||0),0);
+  $('#kTotal').textContent=total; $('#kActive').textContent=active;
+  $('#kBanned').textContent=banned; $('#kPoints').textContent=pts.toLocaleString();
+  const days=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-i); days.push(d); }
+  const counts=days.map(d=>us.filter(u=>u.lastSeenAt&&new Date(u.lastSeenAt)>=d&&new Date(u.lastSeenAt)<new Date(d.getTime()+86400000)).length);
+  const max=Math.max(1,...counts);
+  $('#chart7').innerHTML=days.map((d,i)=>{
+    const lab=`${d.getMonth()+1}/${d.getDate()}`;
+    return `<div class="dayrow"><span>${lab}</span><div class="bar"><i style="width:${counts[i]/max*100}%"></i></div><span style="text-align:right;color:var(--txt)">${counts[i]}</span></div>`;
+  }).join('') || '<div class="empty">暂无数据</div>';
+  const rows=sortUsers().slice(0,15);
+  $('#recentTable tbody').innerHTML=rows.length?rows.map(u=>`<tr><td>${esc(u.nickname||u.id)}</td><td class="mono">${esc(u.deviceId||'-')}</td><td class="desk-only">${esc(u.version||'-')}</td><td>${ago(u.lastSeenAt)}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">还没有客户端上报</td></tr>';
+}
+
+let userFilter={q:'',status:''};
+function renderUsers(){
+  const q=userFilter.q.toLowerCase();
+  const list=sortUsers().filter(u=>{
+    if(userFilter.status&&statusOf(u)!==userFilter.status)return false;
+    if(!q)return true;
+    return [u.nickname,u.id,u.deviceId,u.model].some(v=>String(v||'').toLowerCase().includes(q));
+  });
+  $('#userTable tbody').innerHTML=list.length?list.map(u=>{
+    const st=statusOf(u);
+    return `<tr>
+      <td><div>${esc(u.nickname||'(未命名)')}</div><div class="mono">${esc(u.id)}</div></td>
+      <td class="mono">${esc((u.deviceId||'-').slice(-10))}<div class="mono" style="color:var(--dim)">${esc(u.model||'')}</div></td>
+      <td class="desk-only">${esc(u.version||'-')}</td>
+      <td style="font-weight:700">${(u.points||0).toLocaleString()}</td>
+      <td>${st==='banned'?'<span class="pill ban">封禁中</span>':'<span class="pill ok">正常</span>'}</td>
+      <td class="desk-only">${fmt(u.createdAt)}</td>
+      <td>${ago(u.lastSeenAt)}</td>
+      <td><button class="btn sm ghost" data-act="detail" data-id="${esc(u.id)}">详情</button></td>
+    </tr>`;
+  }).join(''):'<tr><td colspan="8" class="empty">没有匹配的用户</td></tr>';
+}
+
+function renderBan(){
+  const list=Object.values(db.users).filter(u=>statusOf(u)==='banned');
+  $('#banTable tbody').innerHTML=list.length?list.map(u=>`<tr>
+    <td>${esc(u.nickname||u.id)}</td>
+    <td>${u.ban?.days||'-'} 天</td>
+    <td style="max-width:280px">${esc(u.ban?.reason||'')}</td>
+    <td>${u.ban?.untilAt?fmt(new Date(u.ban.untilAt)):'永久'}</td>
+    <td><button class="btn sm ok" data-act="unban" data-id="${esc(u.id)}">解封</button></td>
+  </tr>`).join(''):'<tr><td colspan="5" class="empty">当前没有封禁账号</td></tr>';
+}
+
+function renderNotices(){
+  const list=(db.notices||[]).slice(0,40);
+  $('#noticeList').innerHTML=list.length?list.map(n=>`<div class="chat" style="${n.scope==='all'?'border-left:3px solid var(--brand)':'border-left:3px solid var(--brand2)'}">
+    <b>${esc(n.scope==='all'?'全体':'用户 '+n.target)} · ${fmt(n.at)} · 已读 ${(n.readBy||[]).length} 人</b>
+    <div style="font-weight:700;margin-bottom:4px">${esc(n.title)}</div><div>${esc(n.body)}</div></div>`).join(''):'<div class="empty">还没有发过公告</div>';
+}
+
+function renderLogs(){
+  const list=db.logs||[];
+  $('#logTable tbody').innerHTML=list.length?list.map(l=>`<tr><td class="mono">${fmt(l.at)}</td><td>${esc(l.action)}</td><td>${esc(l.obj)}</td><td class="desk-only">${esc(l.detail)}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">还没有操作记录</td></tr>';
+}
+// ---------- 抽屉 ----------
+let curUid=null, curTab='ledger', curChats=null;
+function openDrawer(uid){
+  curUid=uid; curTab='ledger'; curChats=null;
+  $$('#dTabs button').forEach(b=>b.classList.toggle('on',b.dataset.dt==='ledger'));
+  $('#drawer').classList.add('on'); $('#mask').classList.add('on');
+  drawUser(); 
+}
+function closeDrawer(){ $('#drawer').classList.remove('on'); $('#mask').classList.remove('on'); }
+function drawUser(){
+  const u=db.users[curUid]; if(!u){ closeDrawer(); return; }
+  $('#dName').textContent=u.nickname||u.id;
+  $('#dMeta').innerHTML=`ID ${esc(u.id)} · 设备 ${esc(u.deviceId||'-')} · ${esc(u.model||'')} · 版本 ${esc(u.version||'-')}<br>
+    注册 ${fmt(u.createdAt)} · 最后在线 ${fmt(u.lastSeenAt)} · 积分 <b style="color:#fff">${(u.points||0).toLocaleString()}</b> · 状态 ${statusOf(u)==='banned'?'<span class="pill ban">封禁中（'+esc(u.ban?.reason||'')+'，'+esc(u.ban?.days||'')+' 天）</span>':'<span class="pill ok">正常</span>'}`;
+  const body=$('#dBody');
+  if(curTab==='ledger'){
+    const l=(u.ledger||[]).slice().reverse();
+    body.innerHTML=l.length?`<div style="overflow:auto"><table class="ledger"><thead><tr><th>时间</th><th>变动</th><th>原因</th><th>余额</th></tr></thead><tbody>
+      ${l.map(x=>`<tr><td>${fmt(x.at)}</td><td class="${x.delta>0?'plus':'minus'}">${x.delta>0?'+':''}${x.delta}</td><td>${esc(x.reason||'-')}</td><td>${x.balance!=null?x.balance:'-'}</td></tr>`).join('')}
+    </tbody></table></div>`:'<div class="empty">还没有积分流水（客户端每次消费/获得都会记一条）</div>';
+  }else if(curTab==='chat'){
+    if(!curChats){ body.innerHTML='<div class="empty">读取中…</div>';
+      loadChats(curUid).then(m=>{ curChats=m||[]; drawUser(); }).catch(e=>{ body.innerHTML='<div class="empty">'+esc(e.message)+'</div>'; });
+      return;
+    }
+    const m=curChats.slice(-120);
+    body.innerHTML=m.length?m.map(x=>`<div class="chat ${x.role==='user'?'user':'assistant'}"><b>${x.role==='user'?'用户':'DSH'} · ${fmt(x.at)}</b>${esc(x.text)}</div>`).join(''):'<div class="empty">这台设备还没上报聊天内容</div>';
+  }else{
+    body.innerHTML=`
+      <div class="card" style="margin-bottom:14px">
+        <h3>调整积分</h3>
+        <div class="row">
+          <input id="pDelta" placeholder="例如 +100 或 -50" style="max-width:170px">
+          <input id="pReason" placeholder="原因（必填，写进流水）" style="flex:1;min-width:180px">
+          <button class="btn sm" id="btnPts">提交</button>
+        </div>
+        <p class="lab" style="margin-top:8px">当前 ${(u.points||0).toLocaleString()} 积分。调整后客户端下次心跳会同步到本机余额。</p>
+      </div>
+      <div class="card">
+        <h3>封禁 / 解封</h3>
+        <div class="row">
+          <input id="bDays" type="number" min="1" max="3650" placeholder="封禁天数（必填）" style="max-width:170px">
+          <input id="bReason" placeholder="封禁理由（必填，客户端会显示）" style="flex:1;min-width:180px">
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn sm danger" id="btnBan">封禁该账号</button>
+          <button class="btn sm ok" id="btnUnban">解除封禁</button>
+        </div>
+        <p class="lab" style="margin-top:8px">封禁后该用户打开 App 会直接进锁定页：显示理由、天数、到期时间，下方蓝色「申诉」跳 abcdefg1230852@qq.com。</p>
+      </div>`;
+    $('#btnPts').onclick=()=>adjustPoints(curUid);
+    $('#btnBan').onclick=()=>banUser(curUid);
+    $('#btnUnban').onclick=()=>unbanUser(curUid);
+  }
+}
+
+async function adjustPoints(uid){
+  const u=db.users[uid]; if(!u)return;
+  const d=Number($('#pDelta').value.trim()), r=$('#pReason').value.trim();
+  if(!Number.isFinite(d)||d===0){ toast('积分变动必须是整数且不为 0'); return; }
+  if(!r){ toast('原因必填'); return; }
+  const next=Math.max(0,(u.points||0)+d);
+  u.points=next;
+  u.ledger=u.ledger||[];
+  u.ledger.push({at:Date.now(),delta:next-(u.points-d),reason:'管理员调整：'+r,balance:next,by:whoami});
+  pushLog('调整积分',u.nickname||uid,`${d>0?'+':''}${d}（${r}）→ ${next}`);
+  await saveDb('admin: adjust points '+uid);
+  toast('已调整为 '+next); renderAll(); drawUser();
+}
+
+async function banUser(uid){
+  const u=db.users[uid]; if(!u)return;
+  const days=Number($('#bDays').value.trim()), reason=$('#bReason').value.trim();
+  if(!days||days<1){ toast('封禁天数必填，且 ≥ 1'); return; }
+  if(!reason){ toast('封禁理由必填'); return; }
+  u.status='banned';
+  u.ban={days,reason,at:Date.now(),untilAt:Date.now()+days*86400000,by:whoami};
+  pushLog('封禁账号',u.nickname||uid,`${days} 天，理由：${reason}`);
+  await saveDb('admin: ban '+uid);
+  toast('已封禁 '+days+' 天'); renderAll(); drawUser();
+}
+
+async function unbanUser(uid){
+  const u=db.users[uid]; if(!u)return;
+  if(statusOf(u)!=='banned'){ toast('该账号当前未被封禁'); return; }
+  u.status='active'; u.ban=null;
+  pushLog('解除封禁',u.nickname||uid,'');
+  await saveDb('admin: unban '+uid);
+  toast('已解封'); renderAll(); drawUser();
+}
+
+// ---------- 公告 ----------
+async function sendNotice(){
+  const scope=$('#nScope').value, title=$('#nTitle').value.trim(), body=$('#nBody').value.trim();
+  let target='';
+  if(scope==='user'){
+    const t=$('#nTarget').value.trim();
+    if(!t){ toast('请填目标用户'); return; }
+    const hit=Object.values(db.users).find(u=>u.id===t||(u.nickname||'').trim()===t);
+    if(!hit){ toast('找不到该用户，请用用户 ID 或完整昵称'); return; }
+    target=hit.id;
+  }
+  if(!title||!body){ toast('标题和正文都要填'); return; }
+  db.notices.unshift({id:'n'+Date.now(),scope,target,title,body,at:Date.now(),readBy:[],by:whoami});
+  pushLog('发送公告',scope==='all'?'全体':target,title);
+  await saveDb('admin: notice');
+  $('#nTitle').value=''; $('#nBody').value=''; $('#nTarget').value='';
+  toast('公告已发送'); renderAll();
+}
+
+// ---------- 导出 ----------
+function exportCsv(){
+  const rows=[['用户ID','昵称','设备','机型','版本','积分','状态','注册','最后在线','封禁理由']];
+  Object.values(db.users).forEach(u=>rows.push([u.id,u.nickname||'',u.deviceId||'',u.model||'',u.version||'',u.points||0,statusOf(u)==='banned'?'封禁':'正常',fmt(u.createdAt),fmt(u.lastSeenAt),u.ban?.reason||'']));
+  const csv='\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='dsh-users-'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+}
+
+// ---------- 事件 ----------
+$('#btnLogin').onclick=login;
+$('#pat').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
+$('#btnOut').onclick=()=>{ localStorage.removeItem('dsh_gh_cfg'); location.reload(); };
+$('#btnReload').onclick=async()=>{ try{ await loadDb(); renderAll(); toast('已刷新'); }catch(e){ toast(e.message); } };
+$('#nav').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  $$('#nav button').forEach(x=>x.classList.toggle('on',x===b));
+  ['dash','users','ban','notice','log'].forEach(t=>$('#tab-'+t).classList.toggle('hide',t!==b.dataset.tab));
+});
+$('#btnSearch').onclick=()=>{ userFilter.q=$('#qUser').value.trim(); userFilter.status=$('#qStatus').value; renderUsers(); };
+$('#qUser').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#btnSearch').click(); });
+$('#qStatus').onchange=()=>$('#btnSearch').click();
+$('#btnExport').onclick=exportCsv;
+$('#nScope').onchange=()=>$('#nTargetWrap').classList.toggle('hide',$('#nScope').value!=='user');
+$('#btnNotice').onclick=sendNotice;
+$('#dClose').onclick=closeDrawer; $('#mask').onclick=closeDrawer;
+$('#dTabs').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  curTab=b.dataset.dt; $$('#dTabs button').forEach(x=>x.classList.toggle('on',x===b)); drawUser();
+});
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]'); if(!b)return;
+  const id=b.dataset.id;
+  if(b.dataset.act==='detail') openDrawer(id);
+  if(b.dataset.act==='unban') unbanUser(id);
+});
+
+// ---------- 启动 ----------
+(function boot(){
+  const saved=localStorage.getItem('dsh_gh_cfg');
+  if(!saved)return;
+  try{
+    const o=JSON.parse(saved); Object.assign(CFG,o);
+    $('#repo').value=CFG.repo; $('#branch').value=CFG.branch; $('#pat').value=CFG.pat;
+    login();
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
