@@ -2,26 +2,28 @@
   "app": "DeepSeek Harness Move",
   "package": "com.dshmove.app",
   "channel": "stable",
-  "version": "3.3.1",
-  "build": 33100,
+  "version": "3.3.2",
+  "build": 33200,
   "minSdk": 26,
-  "date": "2026-11-27",
-  "notes": "v3.3.1：积分充值卡片选中时的粒子与边缘流光真正显示（此前被渐变底色盖住），哪张卡居中哪张卡跑粒子、各档统一冷蓝白配色，推荐档粒子更密并带环绕星点闪烁。含 3.3.0 全部改动。",
+  "date": "2026-11-28",
+  "notes": "v3.3.2：权限页与权限弹窗不再卡顿，修掉「给了权限仍提示权限不全」，冷启动先进启动页并后台并行初始化、就绪再进首页，充值页与关于新增联系客服。含 3.3.1 全部改动。",
   "changelog": [
-    "选中卡片特效修复：粒子与边缘流光此前画在渐变底下被盖住，现已移到渐变之上，真机可见",
-    "哪张卡选中哪张卡跑粒子：滑动切档时粒子跟随当前居中卡片，不再是只有推荐档有",
-    "配色统一：所有档位同一套冷蓝白光点，不按档位换色",
-    "推荐档更炫：粒子数量 14→26、上浮更快、单颗带同色辉光并呼吸缩放，另加 3 颗绕卡片中心环绕的十字星点闪烁",
-    "安装包 44.5 MB，覆盖 3.3.0 直接升级，数据保留",
-    "含 3.3.0 全部改动：自备模型不被积分拦截、默认工作模式、权限页提速、厂商原厂 SVG 图标、七日签到包、网址标蓝可点"
+    "权限页提速：权限探测全部挪到后台单线程，detectAll 一次调用回传 7 项；无障碍改为单次快照，不再最多轮询 2.5 秒",
+    "假负面修复：判定缺项后 1.2 秒自动复检一次，回前台也会重测，刚授权完不再闪错误的红条",
+    "冷启动：启动页立刻出画面（不黑屏），日志/插件/账号/自动化通道并行初始化，Boot.ready 就绪后才进首页，真机冷启动 940ms",
+    "工作模式门禁：删除切换时重复的 CapabilityGuard.preflight，超时 5s 压到 1.8s，点一下即切",
+    "联系客服：积分充值页底部与关于页新增入口，mailto 官方邮箱 abcdefg1230852@qq.com",
+    "安装包 44.5 MB，覆盖 3.3.1 直接升级，数据保留",
+    "含 3.3.1 的选中卡片粒子与边缘流光修复"
   ],
-  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.3.1-arm64.apk",
+  "apkUrl": "https://ghfast.top/https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.3.2-arm64.apk",
   "apkFallbackUrls": [
-    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-3.3.1-arm64.apk",
-    "https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.3.1-arm64.apk"
+    "https://mrstudiogame.github.io/dsh-move/dl/DeepSeek-Harness-Move-3.3.2-arm64.apk",
+    "https://raw.githubusercontent.com/MRStudioGame/dsh-move/main/dl/DeepSeek-Harness-Move-3.3.2-arm64.apk"
   ],
-  "md5": "087fa9b0600d6198b03820c31e2da95c",
-  "sha256": "1257dd7f628d8801d9b35e2f00aaab094ac360c7664265e838bec22316114765",
+  "md5": "3f075456b63dcd9d9d3501e857166297",
+  "sha256": "5c41b7ac0d0119acdba4791704134a31a1409915753e8fd539ef5aa8e2b715e2",
   "size": 46705312,
+  "supportEmail": "abcdefg1230852@qq.com",
   "force": false
 }
