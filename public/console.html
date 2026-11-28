@@ -217,9 +217,22 @@ const CFG={repo:'MRStudioGame/dsh-admin',branch:'data',pat:''};
 const STORE_PATH='data/store.json';     // 公告 + 操作日志
 const USER_DIR='data/users/';           // 每个用户一个 json
 const CHAT_DIR='data/chats/';           // 每个用户一个聊天记录
-let storeSha=null, db={users:{},notices:[],logs:[],updated:0};
+let storeSha=null, db={users:{},notices:[],logs:[],updated:0}, readonly=false;
 
-function ghHeaders(){ return {Authorization:'Bearer '+CFG.pat, Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}; }
+function ghHeaders(){ return CFG.pat
+  ? {Authorization:'Bearer '+CFG.pat, Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+  : {Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}; }
+async function rawJson(path){
+  const bases=[
+    `https://ghfast.top/https://raw.githubusercontent.com/${CFG.repo}/${CFG.branch}/`,
+    `https://raw.githubusercontent.com/${CFG.repo}/${CFG.branch}/`,
+    `https://cdn.jsdelivr.net/gh/${CFG.repo}@${CFG.branch}/`
+  ];
+  for(const b of bases){
+    try{ const r=await fetch(b+path+'?t='+Date.now()); if(r.ok){ const t=await r.text(); if(t.trim()) return JSON.parse(t); } }catch(e){}
+  }
+  return null;
+}
 function b64enc(str){ const bytes=new TextEncoder().encode(str); let b=''; bytes.forEach(x=>b+=String.fromCharCode(x)); return btoa(b); }
 function b64dec(b64){ const bin=atob(b64.replace(/\n/g,'')); const bytes=new Uint8Array(bin.length);
   for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i); return new TextDecoder().decode(bytes); }
@@ -241,6 +254,24 @@ async function ghPut(path,text,message,sha){
 }
 
 async function loadStore(){
+  // 只读模式（没填 Token）：一次 tree 列出目录 + raw 拉内容，避开 API 60 次/小时限额
+  if(!CFG.pat){
+    const s=await rawJson(STORE_PATH);
+    db.notices=s?.notices||[]; db.logs=s?.logs||[]; db.updated=s?.updated||0;
+    const users={};
+    try{
+      const r=await fetch(`https://api.github.com/repos/${CFG.repo}/git/trees/${CFG.branch}?recursive=1&t=${Date.now()}`,{headers:ghHeaders()});
+      if(r.ok){
+        const t=await r.json();
+        const files=(t.tree||[]).map(x=>x.path).filter(p=>p.startsWith(USER_DIR)&&p.endsWith('.json'));
+        await Promise.all(files.map(async p=>{
+          const u=await rawJson(p); if(!u)return;
+          u._path=p; users[u.id||p.split('/').pop().replace('.json','')]=u;
+        }));
+      }
+    }catch(e){}
+    db.users=users; return;
+  }
   // 1) 公告 / 日志
   const f=await ghGet(STORE_PATH);
   if(f){ storeSha=f.sha; try{ const o=JSON.parse(b64dec(f.content)); db.notices=o.notices||[]; db.logs=o.logs||[]; db.updated=o.updated||0; }catch(e){ db.notices=[];db.logs=[]; } }
@@ -291,25 +322,29 @@ async function loadChats(uid){
 let whoami='';
 function sortUsers(){ return Object.values(db.users).sort((a,b)=>(b.lastSeenAt||0)-(a.lastSeenAt||0)); }
 function statusOf(u){
-  if(u.status==='banned'&&(!u.ban||!u.ban.untilAt||u.ban.untilAt>Date.now())) return 'banned';
+  const untilT = u.ban && u.ban.untilAt ? new Date(u.ban.untilAt).getTime() : 0;
+  if(u.status==='banned' && (!untilT || untilT>Date.now())) return 'banned';
   return 'active';
 }
 
 async function login(){
-  const repo=$('#repo').value.trim(), br=$('#branch').value.trim(), pat=$('#pat').value.trim();
-  if(!repo||!pat){ toast('仓库与 Token 必填'); return; }
-  const btn=$('#btnLogin'); btn.disabled=true; btn.textContent='验证中…';
+  const repo=$('#repo').value.trim()||'MRStudioGame/dsh-admin', br=$('#branch').value.trim()||'data', pat=$('#pat').value.trim();
+  const btn=$('#btnLogin'); btn.disabled=true; btn.textContent=pat?'验证中…':'载入中…';
   try{
-    const r=await fetch('https://api.github.com/user',{headers:{Authorization:'Bearer '+pat,'X-GitHub-Api-Version':'2022-11-28'}});
-    if(!r.ok) throw new Error('Token 无效或已过期');
-    const me=await r.json(); whoami=me.login;
     Object.assign(CFG,{repo,branch:br,pat});
+    readonly=!pat;
+    if(pat){
+      const r=await fetch('https://api.github.com/user',{headers:{Authorization:'Bearer '+pat,'X-GitHub-Api-Version':'2022-11-28'}});
+      if(!r.ok) throw new Error('Token 无效或已过期');
+      const me=await r.json(); whoami=me.login;
+    } else { whoami=''; }
     localStorage.setItem('dsh_gh_cfg',JSON.stringify(CFG));
     await loadStore();
     $('#login').classList.add('hide'); $('#app').classList.remove('hide');
-    $('#who').textContent='@'+whoami+' · '+repo+'@'+br;
+    $('#who').textContent=(whoami?'@'+whoami+' · ':'只读模式 · ')+repo+'@'+br;
+    document.body.classList.toggle('readonly',readonly);
     renderAll();
-  }catch(e){ toast(e.message||'登录失败'); }
+  }catch(e){ toast(e.message||'载入失败'); }
   finally{ btn.disabled=false; btn.textContent='验证并进入'; }
 }
 
@@ -436,6 +471,7 @@ function drawUser(){
 }
 
 async function adjustPoints(uid){
+  if(readonly){ toast('只读模式：在登录页填 Token 才能写入'); return; }
   const u=db.users[uid]; if(!u)return;
   const d=Number($('#pDelta').value.trim()), r=$('#pReason').value.trim();
   if(!Number.isFinite(d)||d===0){ toast('积分变动必须是整数且不为 0'); return; }
@@ -445,25 +481,27 @@ async function adjustPoints(uid){
   u.points=next;
   u.pointsAt=new Date().toISOString();
   u.ledger=u.ledger||[];
-  u.ledger.push({at:Date.now(),delta:next-before,reason:'管理员调整：'+r,balance:next,by:whoami});
+  u.ledger.push({at:new Date().toISOString(),delta:next-before,reason:'管理员调整：'+r,balance:next,by:whoami});
   pushLog('调整积分',u.nickname||uid,`${next-before>0?'+':''}${next-before}（${r}）→ ${next}`);
   await saveUser(uid); await saveStore('admin: points log');
   toast('已调整为 '+next); renderAll(); drawUser();
 }
 
 async function banUser(uid){
+  if(readonly){ toast('只读模式：在登录页填 Token 才能写入'); return; }
   const u=db.users[uid]; if(!u)return;
   const days=Number($('#bDays').value.trim()), reason=$('#bReason').value.trim();
   if(!days||days<1){ toast('封禁天数必填，且 ≥ 1'); return; }
   if(!reason){ toast('封禁理由必填'); return; }
   u.status='banned';
-  u.ban={days,reason,at:Date.now(),untilAt:Date.now()+days*86400000,by:whoami};
+  u.ban={days,reason,at:new Date().toISOString(),untilAt:new Date(Date.now()+days*86400000).toISOString(),by:whoami};
   pushLog('封禁账号',u.nickname||uid,`${days} 天，理由：${reason}`);
   await saveUser(uid); await saveStore('admin: ban log');
   toast('已封禁 '+days+' 天'); renderAll(); drawUser();
 }
 
 async function unbanUser(uid){
+  if(readonly){ toast('只读模式：在登录页填 Token 才能写入'); return; }
   const u=db.users[uid]; if(!u)return;
   if(statusOf(u)!=='banned'){ toast('该账号当前未被封禁'); return; }
   u.status='active'; u.ban=null;
@@ -474,6 +512,7 @@ async function unbanUser(uid){
 
 // ---------- 公告 ----------
 async function sendNotice(){
+  if(readonly){ toast('只读模式：在登录页填 Token 才能写入'); return; }
   const scope=$('#nScope').value, title=$('#nTitle').value.trim(), body=$('#nBody').value.trim();
   let target='';
   if(scope==='user'){
