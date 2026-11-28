@@ -203,8 +203,12 @@ svg{display:block;width:100%;height:auto}
         <input id="nTitle" maxlength="60" placeholder="例如：3.3.3 已发布">
         <label>正文</label>
         <textarea id="nBody" placeholder="写清楚要通知的内容"></textarea>
-        <div class="row" style="margin-top:14px"><button class="btn" id="btnNotice">发送公告</button></div>
-        <p class="lab" style="margin-top:10px">客户端进入首页时拉取，弹一次并记录已读，不会每次打开都弹。</p>
+        <div class="row" style="margin-top:12px;gap:10px">
+          <div style="flex:1"><label>发布时间（留空 = 立即发布）</label><input id="nAt" type="datetime-local"></div>
+          <div style="flex:1"><label>停用时间（留空 = 不自动停用）</label><input id="nExp" type="datetime-local"></div>
+        </div>
+        <div class="row" style="margin-top:14px"><button class="btn" id="btnNotice">发布公告</button></div>
+        <p class="lab" style="margin-top:10px">客户端进首页时拉取；到发布时间才弹、到停用时间自动消失，弹过并记录已读不再重复。时间按你本机时区。</p>
       </div>
       <div class="card">
         <h3>已发公告</h3>
@@ -518,11 +522,76 @@ function renderBan(){
   </tr>`).join(''):'<tr><td colspan="5" class="empty">当前没有封禁账号</td></tr>';
 }
 
+function noticeState(n){
+  const now=Date.now();
+  if(n.enabled===false) return {k:'off',t:'已停用',cls:'pill'};
+  const start=ts(n.at);
+  if(start&&start>now) return {k:'wait',t:'待发布 '+fmt(n.at),cls:'pill'};
+  const exp=ts(n.expireAt);
+  if(exp&&exp<=now) return {k:'expired',t:'已到期 '+fmt(n.expireAt),cls:'pill'};
+  const tail=exp?' · '+fmt(n.expireAt)+' 自动停用':'';
+  return {k:'on',t:'生效中'+tail,cls:'pill ok'};
+}
+
 function renderNotices(){
-  const list=(db.notices||[]).slice(0,40);
-  $('#noticeList').innerHTML=list.length?list.map(n=>`<div class="chat" style="${n.scope==='all'?'border-left:3px solid var(--brand)':'border-left:3px solid var(--brand2)'}">
-    <b>${esc(n.scope==='all'?'全体':'用户 '+n.target)} · ${fmt(n.at)} · 已读 ${(n.readBy||[]).length} 人</b>
-    <div style="font-weight:700;margin-bottom:4px">${esc(n.title)}</div><div>${esc(n.body)}</div></div>`).join(''):'<div class="empty">还没有发过公告</div>';
+  const list=(db.notices||[]).slice(0,60);
+  $('#noticeList').innerHTML=list.length?list.map(n=>{
+    const st=noticeState(n);
+    return `<div class="chat" style="${n.scope==='all'?'border-left:3px solid var(--brand)':'border-left:3px solid var(--brand2)'};opacity:${st.k==='on'||st.k==='wait'?1:.62}">
+    <b>${esc(n.scope==='all'?'全体':'用户 '+n.target)} · ${fmt(n.at)} · 已读 ${(n.readBy||[]).length} 人 · <span class="${st.cls}">${st.t}</span></b>
+    <div style="font-weight:700;margin-bottom:4px">${esc(n.title)}</div><div>${esc(n.body)}</div>
+    <div class="row" style="margin-top:8px;gap:6px">
+      <button class="btn ghost sm" data-nact="toggle" data-nid="${esc(n.id)}">${n.enabled===false?'启用':'停用'}</button>
+      <button class="btn ghost sm" data-nact="time" data-nid="${esc(n.id)}">改时间</button>
+      <button class="btn ghost sm" data-nact="del" data-nid="${esc(n.id)}">删除</button>
+    </div></div>`;
+  }).join(''):'<div class="empty">还没有发过公告</div>';
+}
+
+function noticeById(id){ return (db.notices||[]).find(n=>n.id===id); }
+
+async function toggleNotice(id){
+  if(readonly){ toast('只读模式：在登录页填 Token 才能写入'); return; }
+  const n=noticeById(id); if(!n)return;
+  n.enabled = n.enabled===false;
+  pushLog(n.enabled?'启用公告':'停用公告', n.scope==='all'?'全体':n.target, n.title);
+  await saveStore('admin: notice toggle');
+  toast(n.enabled?'公告已启用':'公告已停用'); renderAll();
+}
+
+async function deleteNotice(id){
+  if(readonly){ toast('只读模式：在登录页填 Token 才能写入'); return; }
+  const n=noticeById(id); if(!n)return;
+  if(!confirm(`确定删除公告「${n.title}」？删除后客户端不会再看到。`))return;
+  db.notices=db.notices.filter(x=>x.id!==id);
+  pushLog('删除公告', n.scope==='all'?'全体':n.target, n.title);
+  await saveStore('admin: notice delete');
+  toast('公告已删除'); renderAll();
+}
+
+function localInput(iso){
+  const d=iso?new Date(iso):null;
+  if(!d||isNaN(d.getTime()))return '';
+  const p=v=>String(v).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+async function editNoticeTime(id){
+  if(readonly){ toast('只读模式：在登录页填 Token 才能写入'); return; }
+  const n=noticeById(id); if(!n)return;
+  const s=prompt('发布时间（格式 2026-11-28 21:00，留空=立即生效）', n.at?fmt(n.at):'');
+  if(s===null)return;
+  const e=prompt('停用时间（格式 2026-11-30 23:59，留空=不自动停用）', n.expireAt?fmt(n.expireAt):'');
+  if(e===null)return;
+  const parse=(t)=>t.trim()?new Date(t.trim().replace(' ','T')):null;
+  const sd=parse(s), ed=parse(e);
+  if(s.trim()&&(!sd||isNaN(sd.getTime()))){ toast('发布时间格式不对，示例 2026-11-28 21:00'); return; }
+  if(e.trim()&&(!ed||isNaN(ed.getTime()))){ toast('停用时间格式不对，示例 2026-11-30 23:59'); return; }
+  n.at=sd?sd.toISOString():new Date().toISOString();
+  n.expireAt=ed?ed.toISOString():null;
+  n.editedAt=new Date().toISOString();
+  pushLog('修改公告时间', n.title, `发布 ${fmt(n.at)} · 停用 ${n.expireAt?fmt(n.expireAt):'无'}`);
+  await saveStore('admin: notice time');
+  toast('公告时间已更新'); renderAll();
 }
 
 function renderLogs(){
@@ -638,11 +707,18 @@ async function sendNotice(){
     target=hit.id;
   }
   if(!title||!body){ toast('标题和正文都要填'); return; }
-  db.notices.unshift({id:'n'+Date.now(),scope,target,title,body,at:Date.now(),readBy:[],by:whoami});
-  pushLog('发送公告',scope==='all'?'全体':target,title);
+  const atRaw=$('#nAt').value, expRaw=$('#nExp').value;
+  const at=atRaw?new Date(atRaw):new Date();
+  const expireAt=expRaw?new Date(expRaw):null;
+  if(isNaN(at.getTime())){ toast('发布时间格式不对'); return; }
+  if(expireAt&&isNaN(expireAt.getTime())){ toast('停用时间格式不对'); return; }
+  if(expireAt&&expireAt<=at){ toast('停用时间要晚于发布时间'); return; }
+  db.notices.unshift({id:'n'+Date.now(),scope,target,title,body,at:at.toISOString(),expireAt:expireAt?expireAt.toISOString():null,enabled:true,readBy:[],by:whoami});
+  pushLog(at.getTime()>Date.now()+60000?'预定公告':'发布公告',scope==='all'?'全体':target,
+    `${title}${expireAt?' · '+fmt(expireAt)+' 停用':''}`);
   await saveStore('admin: notice');
-  $('#nTitle').value=''; $('#nBody').value=''; $('#nTarget').value='';
-  toast('公告已发送'); renderAll();
+  $('#nTitle').value=''; $('#nBody').value=''; $('#nTarget').value=''; $('#nAt').value=''; $('#nExp').value='';
+  toast(at.getTime()>Date.now()+60000?('公告已预定，'+fmt(at)+' 开始生效'):'公告已发布'); renderAll();
 }
 
 // ---------- 导出 ----------
@@ -675,6 +751,13 @@ $('#dTabs').addEventListener('click',e=>{
   curTab=b.dataset.dt; $$('#dTabs button').forEach(x=>x.classList.toggle('on',x===b)); drawUser();
 });
 document.addEventListener('click',e=>{
+  const n=e.target.closest('[data-nact]');
+  if(n){
+    if(n.dataset.nact==='toggle') toggleNotice(n.dataset.nid);
+    if(n.dataset.nact==='del') deleteNotice(n.dataset.nid);
+    if(n.dataset.nact==='time') editNoticeTime(n.dataset.nid);
+    return;
+  }
   const b=e.target.closest('[data-act]'); if(!b)return;
   const id=b.dataset.id;
   if(b.dataset.act==='detail') openDrawer(id);
